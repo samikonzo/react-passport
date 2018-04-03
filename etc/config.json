@@ -1,0 +1,11 @@
+{
+	"db" : {
+		"name" : "passport-learn",
+		"host" : "localhost",
+		"port" : "27017"
+	},
+
+	"mongo" : {
+		"path": "D:/workspace/mongodb/bin/"
+	}
+}

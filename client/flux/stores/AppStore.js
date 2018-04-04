@@ -1,35 +1,98 @@
 import Dispatcher from '../dispatcher/AppDispatcher.js'
 import Constants from '../constants/AppConstants.js'
+import AppActions from '../actions/AppActions.js'
 import { EventEmitter } from 'events'
 
 
-const Events = {
+const events = {
 	'CHANGE_STATE' : 'CHANGE_STATE',
 	'PAGE_PRE_CHANGE' : 'PAGE_PRE_CHANGE' ,
 	'PAGE_CHANGE' : 'PAGE_CHANGE' ,
 }
 
 
-const State = {
+const state = {
 	isLoading: false,
 	isLogged: false,
+	_historyObj: undefined,
 }
-
-
-
-
 
 
 
 Dispatcher.register( function(action){
 	switch(action.type){
 
-		// login
-		/*case Constants.CHECK_LOGIN : {
-			State.loading = true
+		case Constants.CHECK_AUTH_STARTED : {
+			state.isLoading = true
 			AppStore.emitChange()
 			break;
-		}*/
+		}
+
+		case Constants.CHECK_AUTH_SUCCESS : {
+			var result = action.data
+
+			if(result) state.isLogged = true
+			else state.isLogged = false
+
+			state.isLoading = false
+
+			AppStore.emitChange()
+			break;
+		}
+
+		case Constants.CHECK_AUTH_FAIL : {
+			var err = action.error
+			l(err)
+
+			state.isLoading = false
+
+			AppStore.emitChange()
+			break;
+		}
+
+		case Constants.SET_HISTORY_OBJECT : {
+			AppStore.setHistoryObject(action.data)
+			break;
+		}
+
+		case Constants.REDIRECT_TO : {
+			AppStore.redirectTo(action.url)
+			break;
+		}
+
+		case Constants.LOGOUT : {
+			state.isLogged = false
+			AppStore.emitChange()
+			break;
+		}
+
+		case Constants.LOGIN_TRY : {
+			state.isLoading = true
+			AppStore.emitChange()
+			break;
+		}
+
+		case Constants.LOGIN_RESULT : {
+			// TODO : smooth reload page through PageChange
+
+			state.isLoading = false
+
+			var result = action.data
+
+			if(result) state.isLogged = true
+			else state.isLogged = false
+
+			AppStore.emitChange()
+			break;
+		}
+
+		case Constants.AFTER_REGISTRATION_LOGIN : {
+			state.isLogged = true;
+			AppStore.emitChange()
+			break;
+		}
+
+
 
 	}
 })	
@@ -44,18 +107,18 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 	*/
 
 	addPageChangeListener(pagePreaparing, pageChange){
-		this.on(Events.PAGE_PRE_CHANGE, pagePreaparing)
-		if(pageChange != undefined) this.on(Events.PAGE_CHANGE, pageChange)
+		this.on(events.PAGE_PRE_CHANGE, pagePreaparing)
+		if(pageChange != undefined) this.on(events.PAGE_CHANGE, pageChange)
 	},
 
 	removePageChangeListener(pagePreaparing, pageChange){
-		this.removeListener(Events.PAGE_PRE_CHANGE, pagePreaparing)
-		if(pageChange != undefined) this.removeListener(Events.PAGE_CHANGE, pageChange)
+		this.removeListener(events.PAGE_PRE_CHANGE, pagePreaparing)
+		if(pageChange != undefined) this.removeListener(events.PAGE_CHANGE, pageChange)
 	},
 
 	emitPagePreChange(){
 		return new Promise( (resolve, reject) => {
-			var listenersFuncs = this.listeners(Events.PAGE_PRE_CHANGE)
+			var listenersFuncs = this.listeners(events.PAGE_PRE_CHANGE)
 			var originalFuncs = []
 			var promiseFuncs = []
 			var promisesReady = 0
@@ -104,29 +167,46 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 	},
 
 	emitPageChange(){
-		this.emit(Events.PAGE_CHANGE)
+		// TODO : add history push
+		this.emit(events.PAGE_CHANGE)
+	},
+
+	redirectTo(url){
+		// TODO : At first - emitPagePreChange
+		l(state._historyObj)
+		state._historyObj.push(url)
+	},
+
+	/**
+	*	state Changing
+	*/
+
+	addChangeListener(f){
+		this.on(events.CHANGE_STATE, f)
+	},
+
+	removeChangeListener(f){
+		this.removeListener(events.CHANGE_STATE, f)
+	},
+
+	emitChange(){
+		l(' STORE : EMIT CHANGE')
+		this.emit(events.CHANGE_STATE)
+	},
+
+	getState(){
+		return state
 	},
 
 
 	/**
-	*	State Changing
+	*	Grabbing HistoryObj from React-Router
 	*/
 
-	addChangeListener(f){
-		this.on(Events.CHANGE_STATE, f)
+	setHistoryObject(obj){
+		l('_historyObj : ', obj)
+		state._historyObj = obj
 	},
-
-	removeChangeListener(f){
-		this.removeListener(Events.CHANGE_STATE, f)
-	},
-
-	emitChange(){
-		this.emit(Events.CHANGE_STATE)
-	},
-
-	getState(){
-		return State
-	}
 })
 
 

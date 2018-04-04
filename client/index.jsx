@@ -5,6 +5,7 @@ import App from './containers/App.jsx'
 
 global.l = console.log
 
+
 ReactDom.render(
 	<BrowserRouter>
 		<App/>
@@ -12,3 +13,4 @@ ReactDom.render(
 
 	, document.getElementById('app')
 )
+

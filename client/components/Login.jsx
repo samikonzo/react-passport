@@ -1,17 +1,26 @@
 import React from 'react'
-import Delalink from './etc/Delaylink.jsx'
+import AppActions from '../flux/actions/AppActions.js'
+import Delaylink from './etc/Delaylink.jsx'
 
 class Login extends React.Component{
 	constructor(props){
 		super(props)
 
 		this._onSubmit = this._onSubmit.bind(this)
+		this._isFormSucces = this._isFormSucces.bind(this)
 	}
 
 	_onSubmit(e){
 		e.preventDefault()
 
-		l(' Login ')
+		if(!this._isFormSucces) return
+
+		var formdata = new FormData(e.target)
+		AppActions.login(formdata)
+	}
+
+	_isFormSucces(){
+		return true
 	}
 
 	render(){
@@ -24,7 +33,7 @@ class Login extends React.Component{
 					<input type="submit" value="login"/>
 				</form>
 
-				<Delalink to="/register"> register </Delalink>
+				<Delaylink to="/register"> register </Delaylink>
 			</div>
 		)
 	}

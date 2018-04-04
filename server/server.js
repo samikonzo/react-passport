@@ -49,14 +49,12 @@ app.use('/', routes)
 	}
 	next()
 })
-
 */
 
 
 
 
 app.get(/.*/, function root(req, res){
-	//if(req.url != '/') res.redirect('/')
 	res.sendFile(path.join(__dirname, '../', 'public/index.html'))
 })
 

@@ -7,16 +7,6 @@ const l = console.log
 
 
 
-l(config); l(' ')
-l(mongo); l(' ')
-l(mongoPath); l(' ')
-
-
-
-
-
-
-
 function runCommand(command) {
   return function (cb) {
     exec(command, function (err, stdout, stderr) {

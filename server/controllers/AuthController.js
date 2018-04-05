@@ -21,8 +21,9 @@ UserController.doRegister = (req, res, next) => {
 		username : req.body.username,
 	}), req.body.password, (err, user) => {
 		if(err){
-			l('error', err)
-			return res.redirect('/register')
+			l('doRegister error', err)
+			res.status(400)
+			return res.send(err)
 		}
 
 		//return res.redirect('/')
@@ -30,6 +31,21 @@ UserController.doRegister = (req, res, next) => {
 			res.redirect('/')
 		})
 	})
+
+}
+
+UserController.registerCheckUsernameAvailable = (req, res) => {
+	// check user exist
+
+	var username = req.body.username
+	User.findOne({username : username}, (err, user) => {
+		if(user){
+			l('user exist, send 400')
+			res.status(400).send('User with that username already exist')
+		} else {
+			res.send('no users with this username')
+		} 
+	} )
 
 }
 

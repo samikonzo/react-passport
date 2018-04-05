@@ -13,37 +13,46 @@ class App extends React.Component{
 	constructor(props){
 		super(props)
 
-		this.state = {
-			isLoading: false,
-			isLogged : false,
+		this.state = AppStore.getState()/* {
+			//isLoading: false,
+			//isLogged : false,
 			//hasHistoryObj : AppStore.hasHistoryObj()
-		}
+		}*/
 
 		this._onChangeEvent = this._onChangeEvent.bind(this)
-		this._onPagePreaparing = this._onPagePreaparing.bind(this)
+		this._onPageChangePreaparingApp = this._onPageChangePreaparingApp.bind(this)
 		this._onPageChange = this._onPageChange.bind(this)
 		this._historyObjGrabber = this._historyObjGrabber.bind(this)
 	}
 
 	componentWillMount(){
-		l('COMPONENT WILL MOUNT')
 		AppStore.addChangeListener(this._onChangeEvent)
-		AppStore.addPageChangeListener(this._onPagePreaparing, this._onPageChange)
+		AppStore.addPageChangeListener(this._onPageChangePreaparingApp, this._onPageChange)
 		AppActions.checkAuth()
 	}
 
 	componentWillUnmount(){
 		AppStore.removeChangeListener(this._onChangeEvent)
-		AppStore.removePageChangeListener(this._onPagePreaparing, this._onPageChange)
+		AppStore.removePageChangeListener(this._onPageChangePreaparingApp, this._onPageChange)
+	}
+
+	componentWillReceiveProps(nextProps){
+		//l('nextProps')
 	}
 
 	_onChangeEvent(){
-		l('_onChangeEvent : ', AppStore.getState())
+		//l('_onChangeEvent')
+		//l('_onChangeEvent : ', AppStore.getState())
 		this.setState(AppStore.getState())
 	}
 
-	_onPagePreaparing(){}
-	_onPageChange(){}
+	_onPageChangePreaparingApp(){}
+	_onPageChange(){
+		l('_onPageChange')
+		this.setState(AppStore.getState(),() => {
+			l(this.state)
+		})
+	}
 
 	_historyObjGrabber(elem){
 		if(this.state._historyObj) return

@@ -15,6 +15,8 @@ const state = {
 	isLoading: false,
 	isLogged: false,
 	_historyObj: undefined,
+	error : false,
+	message : undefined,
 }
 
 
@@ -23,12 +25,14 @@ Dispatcher.register( function(action){
 	switch(action.type){
 
 		case Constants.CHECK_AUTH_STARTED : {
+			l(' CHECK_AUTH_STARTED ')
 			state.isLoading = true
 			AppStore.emitChange()
 			break;
 		}
 
 		case Constants.CHECK_AUTH_SUCCESS : {
+			l(' CHECK_AUTH_SUCCESS ')
 			var result = action.data
 
 			if(result) state.isLogged = true
@@ -41,6 +45,7 @@ Dispatcher.register( function(action){
 		}
 
 		case Constants.CHECK_AUTH_FAIL : {
+			l(' CHECK_AUTH_FAIL ')
 			var err = action.error
 			l(err)
 
@@ -56,39 +61,69 @@ Dispatcher.register( function(action){
 		}
 
 		case Constants.REDIRECT_TO : {
-			AppStore.redirectTo(action.url)
+			AppStore.emitPagePreChange()
+				.then(() => {
+					AppStore.redirectTo(action.url)
+					AppStore.emitPageChange()
+				})
 			break;
 		}
 
 		case Constants.LOGOUT : {
+			l(' LOGOUT ')
 			state.isLogged = false
-			AppStore.emitChange()
+			//AppStore.emitChange()
 			break;
 		}
 
 		case Constants.LOGIN_TRY : {
+			l(' LOGIN_TRY ')
 			state.isLoading = true
 			AppStore.emitChange()
 			break;
 		}
 
-		case Constants.LOGIN_RESULT : {
+		case Constants.LOGIN_SUCCESS : {
+			l(' LOGIN_SUCCESS ')
 			// TODO : smooth reload page through PageChange
 
+			AppStore.emitPagePreChange()
+				.then(() => {
+					state.isLoading = false
+
+					var result = action.data
+
+					if(result){
+						state.isLogged = true
+						state.error = false
+						state.message = undefined
+					} else {
+						// mb dont need
+						state.isLogged = false
+					}
+
+					AppStore.emitChange()
+				})
+
+			break;
+		}
+
+		case Constants.LOGIN_FAIL : {
+			l(' LOGIN_FAIL ')
 			state.isLoading = false
-
-			var result = action.data
-
-			if(result) state.isLogged = true
-			else state.isLogged = false
+			state.error = true
+			state.message = 'wrong pair login / password'
 
 			AppStore.emitChange()
 			break;
 		}
 
 		case Constants.AFTER_REGISTRATION_LOGIN : {
+			l(' AFTER_REGISTRATION_LOGIN ')
 			state.isLogged = true;
-			AppStore.emitChange()
+
+			l(state)
+			//AppStore.emitChange()
 			break;
 		}
 
@@ -119,55 +154,39 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 	emitPagePreChange(){
 		return new Promise( (resolve, reject) => {
 			var listenersFuncs = this.listeners(events.PAGE_PRE_CHANGE)
-			var originalFuncs = []
-			var promiseFuncs = []
+			var promisesFuncs = 0
 			var promisesReady = 0
 
+			l(listenersFuncs)
 
-			// distribution of functions
 			listenersFuncs.forEach(f => {
-				if(f.type != undefined){
-					if(f.type == 'promise') promiseFuncs.push(f)
-					else originalFuncs.push(f)	
+				var result = f()
+				if(result && result.then){
+					promisesFuncs++
 
-					return
-				}
+					result.then(
+						fReady => {
+							l('+1 resolved')
+							promisesReady++
 
-				if(isPromise(f)){
-					f.type = 'promise'
-					promiseFuncs.push(f)
-				} else {
-					f.type = 'function'
-					originalFuncs.push(f)
-				}
-			})
-
-			// run all original funcs
-			originalFuncs.forEach(f => {
-				f()
-			})
-
-			//run all promise func
-			promiseFuncs.forEach(f => {
-				f().then(
-					fReady => {
-						promisesReady++
-
-						if(checkAllReady){
-							resolve()
+							if(checkAllReady){
+								l('all ready')
+								resolve()
+							}
 						}
-					}
-				)
+					)
+				}
 			})
 
 			function checkAllReady(){
-				return promisesReady == promiseFuncs.length
+				l('promisesReady : ', promisesReady)
+				l('promisesFuncs :', promisesFuncs)
+				return promisesReady == promisesFuncs
 			}
 		})
 	},
 
 	emitPageChange(){
-		// TODO : add history push
 		this.emit(events.PAGE_CHANGE)
 	},
 
@@ -204,7 +223,7 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 	*/
 
 	setHistoryObject(obj){
-		l('_historyObj : ', obj)
+		//l('_historyObj : ', obj)
 		state._historyObj = obj
 	},
 })

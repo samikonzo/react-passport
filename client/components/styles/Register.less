@@ -1,0 +1,57 @@
+
+.Register-username{
+	border: 1px solid transparent;
+	border-bottom: 1px solid grey;
+	outline: none;
+
+	&--available{
+		border-bottom: 1px solid green;
+	}
+
+	&--not-available{
+		border-bottom: 1px solid red;
+	}
+
+	&__label{}
+}
+
+.Register-username__loading{
+	width: 40px;
+	height: 40px;
+	border: 1px solid red;
+	animation: username__loading 2s infinite alternate;
+	opacity: 0;
+	transition: .3s;
+
+	&--showed{
+		opacity: 1;
+	}
+}
+
+.Register-username__error{
+
+	&--showed{}
+}
+
+.Register-password{
+	.Register-username;
+	
+	&__label{}
+	
+}
+
+.Register-submitBtn{
+	display: block;
+}
+
+
+
+@keyframes username__loading{
+	from{
+		transform: rotateZ(0);
+	}
+
+	to{
+		transform: rotateZ(360deg);
+	}
+}

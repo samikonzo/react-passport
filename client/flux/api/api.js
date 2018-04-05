@@ -17,6 +17,10 @@ export default {
 		return axios.post('/register', data)
 	},
 
+	registerCheckUsernameAvailable(username){
+		return axios.post('/register/checkUsernameAvailable', {username : username})
+	},
+
 	login(formdata){
 		// axios dont want to post formdata 
 		// so parse data and send

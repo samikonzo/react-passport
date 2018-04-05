@@ -7,9 +7,11 @@ var auth = require('../controllers/AuthController')
 *	Auth request
 */
 router.post('/register', auth.doRegister)
+router.post('/register/checkUsernameAvailable', auth.registerCheckUsernameAvailable)
 router.post('/login', auth.doLogin)
 router.get('/logout', auth.logout)
 router.get('/authStatus', auth.authStatus)
+
 
 
 

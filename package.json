@@ -7,7 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "server": "nodemon server/server.js",
     "wds": "webpack-dev-server --debug --hot --devtool eval-source-map --output-pathinfo --watch --colors --inline --content-base public --port 8090 --host 0.0.0.0",
-    "gulp" : "gulp",
+    "gulp": "gulp",
     "start": "start npm run server && start npm run wds && start npm run gulp"
   },
   "keywords": [],
@@ -16,17 +16,21 @@
   "dependencies": {
     "axios": "^0.18.0",
     "body-parser": "^1.18.2",
+    "css-loader": "^0.28.11",
     "events": "^2.0.0",
     "express-session": "^1.15.6",
     "flux": "^3.1.3",
     "gulp": "^3.9.1",
+    "less": "^3.0.1",
+    "less-loader": "^4.1.0",
     "mongoose": "^5.0.12",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^5.0.0",
     "react": "^16.3.0",
     "react-dom": "^16.3.0",
-    "react-router-dom": "^4.2.2"
+    "react-router-dom": "^4.2.2",
+    "style-loader": "^0.20.3"
   },
   "devDependencies": {
     "babel": "^6.23.0",

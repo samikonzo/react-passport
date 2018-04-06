@@ -31,7 +31,6 @@ UserController.doRegister = (req, res, next) => {
 			res.redirect('/')
 		})
 	})
-
 }
 
 UserController.registerCheckUsernameAvailable = (req, res) => {
@@ -46,7 +45,6 @@ UserController.registerCheckUsernameAvailable = (req, res) => {
 			res.send('no users with this username')
 		} 
 	} )
-
 }
 
 UserController.doLogin = (req, res, next) => {
@@ -55,7 +53,7 @@ UserController.doLogin = (req, res, next) => {
 
 	passport.authenticate('local')(req, res, function(err, user){
 		if(err){
-			res.send('login error')
+			res.send(err)
 		} else {
 			res.send('login success')
 		}
@@ -65,9 +63,9 @@ UserController.doLogin = (req, res, next) => {
 UserController.logout = (req, res, next) => {
 
 	//UserController.showUsers()
-	l(req.isAuthenticated())
-	l(req.logout)
-	l(req.isAuthenticated())
+	//l(req.isAuthenticated())
+	//l(req.logout)
+	//l(req.isAuthenticated())
 
 	req.logout()
 	res.redirect('/')
@@ -79,33 +77,6 @@ UserController.authStatus = (req, res, next) => {
 	l('authStatus : ', req.isAuthenticated())
 	res.send(req.isAuthenticated())
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 module.exports = UserController

@@ -3,36 +3,14 @@ import Constants from '../constants/AppConstants.js'
 import api from '../api/api.js'
 
 const AppActions ={
-	checkAuth(){
-		//l(' ACTION : checkAuth')
-		Dispatcher.dispatch({
-			type: Constants.CHECK_AUTH_STARTED
-		})
-
-		api.checkAuth().then(
-			result => {
-				Dispatcher.dispatch({
-					type: Constants.CHECK_AUTH_SUCCESS,
-					data: result.data,
-				})
-			},
-			err => {
-				Dispatcher.dispatch({
-					type: Constants.CHECK_AUTH_FAIL,
-					error: err,
-					err: err,
-					data: err
-				})
-			}
-		)
-	},
-
+	/**
+	*	Auth 
+	*/
 	register(formdata){
 		l(' ACTION : register')
 		api.register(formdata)
 			.then(
 				ok => {
-
 
 					var url = '/'
 					Dispatcher.dispatch({
@@ -114,7 +92,7 @@ const AppActions ={
 	},
 
 	login(formdata){
-		//l(' ACTION : login')
+		l(' ACTION : login')
 
 		Dispatcher.dispatch({
 			type: Constants.LOGIN_TRY
@@ -127,7 +105,6 @@ const AppActions ={
 
 					Dispatcher.dispatch({
 						type: Constants.LOGIN_SUCCESS,
-						data: result.data,
 					})
 
 					Dispatcher.dispatch({
@@ -150,18 +127,8 @@ const AppActions ={
 			)
 	},
 
-	setHistoryObj(obj){
-		//l(' ACTION : setHistoryObj')
-		Dispatcher.dispatch({
-			type: Constants.SET_HISTORY_OBJECT,
-			data: obj,
-			object: obj,
-			obj: obj,
-		})
-	},
-
 	logout(){
-		//l(' ACTION : logout')
+		l(' ACTION : logout')
 		api.logout()
 			.then(
 				() => {
@@ -180,7 +147,175 @@ const AppActions ={
 
 				}
 			)
+	},
+
+	checkAuth(){
+		l(' ACTION : checkAuth')
+		Dispatcher.dispatch({
+			type: Constants.CHECK_AUTH_STARTED
+		})
+
+		api.checkAuth().then(
+			result => {
+				Dispatcher.dispatch({
+					type: Constants.CHECK_AUTH_SUCCESS,
+					data: result.data,
+				})
+			},
+			err => {
+				Dispatcher.dispatch({
+					type: Constants.CHECK_AUTH_FAIL,
+					error: err,
+					err: err,
+					data: err
+				})
+			}
+		)
+	},
+
+	/**
+	*	Page changing
+	*/	
+	setHistoryObj(obj){
+		l(' ACTION : setHistoryObj')
+		Dispatcher.dispatch({
+			type: Constants.SET_HISTORY_OBJECT,
+			data: obj,
+			object: obj,
+			obj: obj,
+		})
+
+		setTimeout(function f(){
+			var dispatching = Dispatcher.isDispatching()
+			l('dispatching : ', dispatching)
+			if(dispatching){
+				setTimeout(f, 1000)
+			}
+
+		}, 0)
+
+	},
+
+	popstate(e){
+		l('ACTION : popstate')
+		/*Dispatcher.dispatch({
+			type : Constants.POP_STATE
+		})*/
+	},
+
+	redirectTo(url){
+		l('ACTION : redirectTo')
+		Dispatcher.dispatch({
+			type: Constants.REDIRECT_TO,
+			data: url,
+			url : url,
+			href : url,
+		})
+	},
+
+
+	/**
+	*	User
+	*/
+	getUserInfo(){
+		l('ACTION : getUserInfo')
+		l(Dispatcher.isDispatching())
+
+		Dispatcher.dispatch({
+			type: Constants.LOADING,
+		})
+
+		setTimeout(() => {
+			/*l(Dispatcher.isDispatching())
+			Dispatcher.dispatch({
+				type: Constants.LOADING,
+			})
+
+			api.getUserInfo()
+				.then(
+					user => {
+						Dispatcher.dispatch({
+							type: Constants.USER_GET_USER_INFO_SUCCESS,
+							data: user.data,
+							user: user.data,
+						})
+					},
+					err => {
+						Dispatcher.dispatch({
+							type: Constants.USER_GET_USER_INFO_FAIL,
+							result: err,
+							err: err,
+							error: err,
+						})
+					}
+				)*/
+
+
+			
+		}, 0)
+
+	},
+
+}
+
+
+var l = console.log;
+
+
+for(let fname in AppActions){
+	let savedF = AppActions[fname]
+
+	AppActions[fname] = function(){
+		l(fname)
+		
+
+		if(Dispatcher.isDispatching()){
+			if(!AppActions._queue){
+				AppActions._queue = []
+			}
+			
+			AppActions._queue.push({fname : fname, arguments: arguments})
+
+			if(!AppActions._queueTimer){
+				AppActions._queueTimer = setTimeout( function timerF(){
+					if(Dispatcher.isDispatching()){
+						AppActions._queueTimer = setTimeout(timerF, 100)
+					} else {
+
+						// dublicate =(
+						if(AppActions._queue){
+							var delayedF = AppActions._queue.pop()
+
+							setTimeout(() => {
+								AppActions[delayedF.fname].apply(null, delayedF.arguments)
+
+								if(!AppActions._queue.length) delete AppActions._queue
+							}, 100)
+						} 
+					}
+				}, 100)
+			}
+
+
+			
+		} else {
+			savedF.apply(null, arguments)
+
+			if(AppActions._queue){
+				var delayedF = AppActions._queue.pop()
+
+				setTimeout(() => {
+					AppActions[delayedF.fname].apply(null, delayedF.arguments)
+
+					if(!AppActions._queue.length) delete AppActions._queue
+				}, 100)
+			} 
+		}
 	}
 }
+
+
+
+
 
 export default AppActions

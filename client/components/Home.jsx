@@ -7,6 +7,10 @@ class Home extends React.Component{
 	constructor(props){
 		super(props)
 
+		this.state = {
+			user : AppStore.getUserInfo()	
+		}
+
 		this._hideConentHome = this._hideConentHome.bind(this)
 	}
 
@@ -14,6 +18,7 @@ class Home extends React.Component{
 		AppStore.addPageChangeListener(this._hideConentHome)
 	}
 
+	
 	componentWillUnmount(){
 		AppStore.removePageChangeListener(this._hideConentHome)
 	}
@@ -35,9 +40,14 @@ class Home extends React.Component{
 
 
 	render(){
+
+		l(this.state)
+
 		return(
 			<div>
-				Home
+				Hello, {}
+
+				<Delaylink to="/contacts">Contacts</Delaylink>
 			</div>
 		)
 	}

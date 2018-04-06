@@ -1,6 +1,7 @@
 var express = require('express')
 var router = express.Router()
 var auth = require('../controllers/AuthController')
+var data = require('../controllers/DataController')
 
 
 /**
@@ -13,7 +14,10 @@ router.get('/logout', auth.logout)
 router.get('/authStatus', auth.authStatus)
 
 
-
+/**
+*	User
+*/
+router.get('/user', data.isUserAuthed ,data.getUserInfo)
 
 
 /*router.get('/loginStatus', (req, res) => {

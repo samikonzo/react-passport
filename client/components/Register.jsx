@@ -79,24 +79,19 @@ class Register extends React.Component{
 
 		if(username.trim) username = username.trim()
 		
-		// empty string check
-		// no need to check empty string if length must be > 5
-		/*if(username == ''){
-			AppActions.registerCheckUsernameFail('empty username is not allowed')
-			return
-		}*/
-
 		// space check
 		if(username.split(' ').length > 1){
 			AppActions.registerCheckUsernameFail('spaces are not allowed')
 			return
 		}
 
+		// length check
 		if(username.length < 5 || username.length > 15){
 			AppActions.registerCheckUsernameFail('5 < username < 15 : ' + username.length)
 			return
 		}
 
+		// everything pk
 		AppActions.registerCheckUsernameAvailable(username)
 	}
 

@@ -13,12 +13,12 @@ class DelayLink extends React.Component{
 
 
 	handleClick(e){
-		//e.preventDefault()
+		e.preventDefault()
 
-		//const { replace, to} = this.props
-		//const { history: historyObj  } = this.context.router
+		const { replace, to} = this.props
+		const { history: historyObj  } = this.context.router
 
-		//AppActions.changePage(to, historyObj)
+		AppActions.redirectTo(to, historyObj)
 
 	}
 

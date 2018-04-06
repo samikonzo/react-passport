@@ -19,36 +19,49 @@ class App extends React.Component{
 			//hasHistoryObj : AppStore.hasHistoryObj()
 		}*/
 
-		this._onChangeEvent = this._onChangeEvent.bind(this)
+		this._onChangeEventApp = this._onChangeEventApp.bind(this)
 		this._onPageChangePreaparingApp = this._onPageChangePreaparingApp.bind(this)
-		this._onPageChange = this._onPageChange.bind(this)
+		this._onPageChangeApp = this._onPageChangeApp.bind(this)
 		this._historyObjGrabber = this._historyObjGrabber.bind(this)
 	}
 
 	componentWillMount(){
-		AppStore.addChangeListener(this._onChangeEvent)
-		AppStore.addPageChangeListener(this._onPageChangePreaparingApp, this._onPageChange)
+		AppStore.addChangeListener(this._onChangeEventApp)
+		AppStore.addPageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)
 		AppActions.checkAuth()
+
+		/*window.addEventListener('popstate', e => {
+			e.preventDefault()
+			AppActions.popstate()
+		})*/
 	}
 
 	componentWillUnmount(){
-		AppStore.removeChangeListener(this._onChangeEvent)
-		AppStore.removePageChangeListener(this._onPageChangePreaparingApp, this._onPageChange)
+		AppStore.removeChangeListener(this._onChangeEventApp)
+		AppStore.removePageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)
 	}
 
 	componentWillReceiveProps(nextProps){
 		//l('nextProps')
 	}
 
-	_onChangeEvent(){
-		//l('_onChangeEvent')
-		//l('_onChangeEvent : ', AppStore.getState())
-		this.setState(AppStore.getState())
+	_onChangeEventApp(){
+		//l('_onChangeEventApp')
+		//l('_onChangeEventApp : ', AppStore.getState())
+		this.setState(AppStore.getState(), () => {
+			if(this.state.isLogged && 
+			 	!this.state.isLoading &&
+			 	 !this.state.user){
+				//AppActions.getUserInfo()
+			}
+		})
+
 	}
 
 	_onPageChangePreaparingApp(){}
-	_onPageChange(){
-		l('_onPageChange')
+
+	_onPageChangeApp(){
+		l('_onPageChangeApp')
 		this.setState(AppStore.getState(),() => {
 			l(this.state)
 		})
@@ -85,8 +98,8 @@ class App extends React.Component{
 		} else {
 			AppBody = (
 				<Switch> 
-					<Route exact path='/' component={Login} />
 					<Route path='/register' component={Register} />
+					<Route path='*' component={Login} />
 				</Switch> 
 			)
 		}

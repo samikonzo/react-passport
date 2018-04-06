@@ -35,5 +35,9 @@ export default {
 
 	logout(){
 		return axios.get('/logout')
-	}
+	},
+
+	getUserInfo(){
+		return axios.get('/user')
+	},	
 }

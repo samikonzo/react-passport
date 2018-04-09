@@ -2,6 +2,7 @@ import React from 'react'
 import { Link, Route, Switch } from 'react-router-dom'
 import AppActions from '../flux/actions/AppActions.js'
 import AppStore from '../flux/stores/AppStore.js'
+import AuthStore from '../flux/stores/AuthStore.js'
 
 import './App.less'
 
@@ -16,22 +17,24 @@ class App extends React.Component{
 	constructor(props){
 		super(props)
 
-		this.state = AppStore.getState()/* {
-			//isLoading: false,
-			//isLogged : false,
-			//hasHistoryObj : AppStore.hasHistoryObj()
-		}*/
+		this.state = Object.assign({}, 
+			AppStore.getState(),
+			AuthStore.getState(),
+		)
+	
 
-		this._onChangeEventApp = this._onChangeEventApp.bind(this)
+		this._historyObjGrabber = this._historyObjGrabber.bind(this)
+		/*this._onChangeEventApp = this._onChangeEventApp.bind(this)
 		this._onPageChangePreaparingApp = this._onPageChangePreaparingApp.bind(this)
 		this._onPageChangeApp = this._onPageChangeApp.bind(this)
-		this._historyObjGrabber = this._historyObjGrabber.bind(this)
+		*/
 	}
 
 	componentWillMount(){
-		AppStore.addChangeListener(this._onChangeEventApp)
+		/*AppStore.addChangeListener(this._onChangeEventApp)
 		AppStore.addPageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)
-		AppActions.checkAuth()
+		AppActions.checkAuth()*/
+
 
 		/*window.addEventListener('popstate', e => {
 			e.preventDefault()
@@ -40,8 +43,8 @@ class App extends React.Component{
 	}
 
 	componentWillUnmount(){
-		AppStore.removeChangeListener(this._onChangeEventApp)
-		AppStore.removePageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)
+		/*AppStore.removeChangeListener(this._onChangeEventApp)
+		AppStore.removePageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)*/
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -51,13 +54,13 @@ class App extends React.Component{
 	_onChangeEventApp(){
 		//l('_onChangeEventApp')
 		//l('_onChangeEventApp : ', AppStore.getState())
-		this.setState(AppStore.getState(), () => {
+		/*this.setState(AppStore.getState(), () => {
 			if(this.state.isLogged && 
 			 	!this.state.isLoading &&
 			 	 !this.state.user){
 				AppActions.getUserInfo()
 			}
-		})
+		})*/
 
 	}
 
@@ -65,9 +68,9 @@ class App extends React.Component{
 
 	_onPageChangeApp(){
 		//l('_onPageChangeApp')
-		this.setState(AppStore.getState(),() => {
+		/*this.setState(AppStore.getState(),() => {
 			l(this.state)
-		})
+		})*/
 	}
 
 	_historyObjGrabber(elem){
@@ -75,7 +78,7 @@ class App extends React.Component{
 		
 		if(elem && elem.context && elem.context.router && elem.context.router.history){
 			var _historyObj = elem.context.router.history
-			AppActions.setHistoryObj(_historyObj)
+			AppActions.pageSetHistoryObj(_historyObj)
 		}
 
 		return

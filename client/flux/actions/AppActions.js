@@ -2,9 +2,11 @@ import Dispatcher from '../dispatcher/AppDispatcher.js'
 import Constants from '../constants/AppConstants.js'
 import api from '../api/api.js'
 
+const l = console.log;
+
 const AppActions ={
 	/**
-	*	Auth 
+	*	Register
 	*/
 	register(formdata){
 		//l(' ACTION : register')
@@ -101,11 +103,16 @@ const AppActions ={
 		})
 	},
 
-	login(formdata){
+
+
+	/**
+	*	Auth 
+	*/
+	authLogin(formdata){
 		//l(' ACTION : login')
 
 		Dispatcher.dispatch({
-			type: Constants.LOGIN_TRY
+			type: Constants.AUTH_LOGIN_TRY
 		})
 
 		api.login(formdata)
@@ -114,7 +121,7 @@ const AppActions ={
 					var url = '/'
 
 					Dispatcher.dispatch({
-						type: Constants.LOGIN_SUCCESS,
+						type: Constants.AUTH_LOGIN_SUCCESS,
 					})
 
 					Dispatcher.dispatch({
@@ -128,7 +135,7 @@ const AppActions ={
 				err => {
 					l(' Login err : ', err)
 					Dispatcher.dispatch({
-						type: Constants.LOGIN_FAIL,
+						type: Constants.AUTH_LOGIN_FAIL,
 						result: err,
 						err: err,
 						error: err,
@@ -137,7 +144,7 @@ const AppActions ={
 			)
 	},
 
-	logout(){
+	authLogout(){
 		//l(' ACTION : logout')
 		api.logout()
 			.then(
@@ -152,29 +159,29 @@ const AppActions ={
 					})
 
 					Dispatcher.dispatch({
-						type: Constants.LOGOUT,
+						type: Constants.AUTH_LOGOUT,
 					})
 
 				}
 			)
 	},
 
-	checkAuth(){
+	authCheckAuth(){
 		//l(' ACTION : checkAuth')
 		Dispatcher.dispatch({
-			type: Constants.CHECK_AUTH_STARTED
+			type: Constants.AUTH_CHECK_AUTH_STARTED
 		})
 
 		api.checkAuth().then(
 			result => {
 				Dispatcher.dispatch({
-					type: Constants.CHECK_AUTH_SUCCESS,
+					type: Constants.AUTH_CHECK_AUTH_SUCCESS,
 					data: result.data,
 				})
 			},
 			err => {
 				Dispatcher.dispatch({
-					type: Constants.CHECK_AUTH_FAIL,
+					type: Constants.AUTH_CHECK_AUTH_FAIL,
 					error: err,
 					err: err,
 					data: err
@@ -183,56 +190,12 @@ const AppActions ={
 		)
 	},
 
-	/**
-	*	Page changing
-	*/	
-	setHistoryObj(obj){
-		//l(' ACTION : setHistoryObj')
-		Dispatcher.dispatch({
-			type: Constants.SET_HISTORY_OBJECT,
-			data: obj,
-			object: obj,
-			obj: obj,
-		})
-
-		setTimeout(function f(){
-			var dispatching = Dispatcher.isDispatching()
-			//l('dispatching : ', dispatching)
-			if(dispatching){
-				setTimeout(f, 1000)
-			}
-
-		}, 0)
-
-	},
-
-	popstate(e){
-		//l('ACTION : popstate')
-		/*Dispatcher.dispatch({
-			type : Constants.POP_STATE
-		})*/
-	},
-
-	redirectTo(url){
-		//l('ACTION : redirectTo')
-		Dispatcher.dispatch({
-			type: Constants.REDIRECT_TO,
-			data: url,
-			url : url,
-			href : url,
-		})
-	},
-
-
-	/**
-	*	User
-	*/
-	getUserInfo(){
+	authGetUserInfo(){
 		//l('ACTION : getUserInfo')
 		l(Dispatcher.isDispatching())
 
 		Dispatcher.dispatch({
-			type: Constants.LOADING,
+			type: Constants.AUTH_LOADING,
 		})
 
 		setTimeout(() => {
@@ -263,16 +226,68 @@ const AppActions ={
 
 			
 		}, 0)
-
 	},
 
+
+	/**
+	*	Page changing
+	*/	
+	pageSetHistoryObj(obj){
+		//l(' ACTION : setHistoryObj')
+		Dispatcher.dispatch({
+			type: Constants.SET_HISTORY_OBJECT,
+			data: obj,
+			object: obj,
+			obj: obj,
+		})
+
+		setTimeout(function f(){
+			var dispatching = Dispatcher.isDispatching()
+			//l('dispatching : ', dispatching)
+			if(dispatching){
+				setTimeout(f, 1000)
+			}
+
+		}, 0)
+	},
+
+	pagePopstate(e){
+		//l('ACTION : popstate')
+		/*Dispatcher.dispatch({
+			type : Constants.POP_STATE
+		})*/
+	},
+
+	pageRedirectTo(url){
+		//l('ACTION : redirectTo')
+		Dispatcher.dispatch({
+			type: Constants.REDIRECT_TO,
+			data: url,
+			url : url,
+			href : url,
+		})
+	},
 }
 
 
-var l = console.log;
 
+/**
+*	Dispatchers multiRequest issue fix
+* 	by creating queue of requests
+*/
 
 function dispatchingCheck(fName, args){
+	/**
+	*	check Dispatcher.isDispatching
+		if Dispather not buzy return false 
+		else 
+			return true (and prevent original func) 
+			create queue (if not exist)
+			add
+			
+
+	*/
+
 	if(Dispatcher.isDispatching()){
 
 		if(!Dispatcher._queue) Dispatcher._queue = []
@@ -292,7 +307,8 @@ function dispatchingCheck(fName, args){
 					if(Dispatcher._queue){
 
 						// wrong method, cuz delayedF must get first _queue object
-						var delayedF = Dispatcher._queue.pop()
+						// var delayedF = Dispatcher._queue.pop()
+						var delayedF = Dispatcher._queue.splice(0,1)[0]
 						
 						AppActions[delayedF.fName].apply(null, delayedF.arguments)
 
@@ -326,7 +342,7 @@ for(let fName in AppActions){
 	}
 }
 
-
+//////////////////////////////////////
 
 
 

@@ -9,26 +9,31 @@ const events = {
 
 
 const state = {
-	isLoading: false,
+	isLoading : false,
+	isLogged : false,
+	/*error : false,
+	message : false,*/
+	user: undefined,
+	/*isLoading: false,
 	isLogged: false,
 	_historyObj: undefined,
 	error : false,
 	message : undefined,
-	user: undefined,
+	user: undefined,*/
 }
 
 
 Dispatcher.register( function(action){
 	switch(action.type){
 
-		case Constants.CHECK_AUTH_STARTED : {
+		case Constants.AUTH_CHECK_AUTH_STARTED : {
 			//l(' CHECK_AUTH_STARTED ')
 			state.isLoading = true
 			AppStore.emitChange(' CHECK_AUTH_STARTED ')
 			break;
 		}
 
-		case Constants.CHECK_AUTH_SUCCESS : {
+		case Constants.AUTH_CHECK_AUTH_SUCCESS : {
 			//l(' CHECK_AUTH_SUCCESS ')
 			var result = action.data
 
@@ -41,7 +46,7 @@ Dispatcher.register( function(action){
 			break;
 		}
 
-		case Constants.CHECK_AUTH_FAIL : {
+		case Constants.AUTH_CHECK_AUTH_FAIL : {
 			//l(' CHECK_AUTH_FAIL ')
 			var err = action.error
 			l(err)
@@ -52,14 +57,14 @@ Dispatcher.register( function(action){
 			break;
 		}
 
-		case Constants.LOGIN_TRY : {
+		case Constants.AUTH_LOGIN_TRY : {
 			//l(' LOGIN_TRY ')
 			state.isLoading = true
 			AppStore.emitChange(' LOGIN_TRY ')
 			break;
 		}
 
-		case Constants.LOGIN_SUCCESS : {
+		case Constants.AUTH_LOGIN_SUCCESS : {
 			//l(' LOGIN_SUCCESS ')
 			// TODO : smooth reload page through PageChange
 
@@ -76,7 +81,7 @@ Dispatcher.register( function(action){
 			break;
 		}
 
-		case Constants.LOGIN_FAIL : {
+		case Constants.AUTH_LOGIN_FAIL : {
 			//l(' LOGIN_FAIL ')
 			state.isLoading = false
 			state.error = true
@@ -86,24 +91,24 @@ Dispatcher.register( function(action){
 			break;
 		}
 
-		case Constants.AFTER_REGISTRATION_LOGIN : {
+		case Constants.AUTH_AFTER_REGISTRATION_LOGIN : {
 			//l(' AFTER_REGISTRATION_LOGIN ')
 			state.isLogged = true;
 			
 			break;
 		}
 
-		case Constants.LOGOUT : {
+		case Constants.AUTH_LOGOUT : {
 			state.isLogged = false
 			break;
 		}
 
-		case Constants.LOADING : {
+		case Constants.AUTH_LOADING : {
 			//state.isLoading = true
 			//AppStore.emitChange(' LOADING ')
 		}
 
-		case Constants.USER_GET_USER_INFO_SUCCESS : { 
+		case Constants.AUTH_GET_USER_INFO_SUCCESS : { 
 			/*state.isLoading = false
 			state.user = action.user
 			l('user : ', state.user)
@@ -111,7 +116,7 @@ Dispatcher.register( function(action){
 			break;
 		}
 
-		case Constants.USER_GET_USER_INFO_FAIL : { 
+		case Constants.AUTH_GET_USER_INFO_FAIL : { 
 			/*state.isLoading = false
 			state.user = 'no user info'
 			l('err : ', action.err)
@@ -122,75 +127,8 @@ Dispatcher.register( function(action){
 })	
 
 const AuthStore = Object.assign({}, EventEmitter.prototype, {
-
 	/**
-	*	Page Changing
-	*	1) run all pagePreaparing promise funcs
-	*	2) after resolve of pagePrepare promise run page change
-	*/
-
-	addPageChangeListener(pagePreaparing, pageChange){
-		this.on(events.PAGE_PRE_CHANGE, pagePreaparing)
-		if(pageChange != undefined) this.on(events.PAGE_CHANGE, pageChange)
-	},
-
-	removePageChangeListener(pagePreaparing, pageChange){
-		this.removeListener(events.PAGE_PRE_CHANGE, pagePreaparing)
-		if(pageChange != undefined) this.removeListener(events.PAGE_CHANGE, pageChange)
-	},
-
-	emitPagePreChange(){
-		return new Promise( (resolve, reject) => {
-			var listenersFuncs = this.listeners(events.PAGE_PRE_CHANGE)
-			var promisesFuncs = 0
-			var promisesReady = 0
-
-			l(listenersFuncs)
-
-			listenersFuncs.forEach(f => {
-				var result = f()
-				if(result && result.then){
-					promisesFuncs++
-
-					result.then(
-						fReady => {
-							//l('+1 resolved')
-							promisesReady++
-
-							if(checkAllReady){
-								//l('all ready')
-								resolve()
-							}
-						}
-					)
-				}
-			})
-
-			if(!promisesFuncs){
-				//l('all ready')
-				resolve()
-			}
-
-			function checkAllReady(){
-				//l('promisesReady : ', promisesReady)
-				//l('promisesFuncs :', promisesFuncs)
-				return promisesReady == promisesFuncs
-			}
-		})
-	},
-
-	emitPageChange(){
-		this.emit(events.PAGE_CHANGE)
-	},
-
-	redirectTo(url){
-		// TODO : At first - emitPagePreChange
-		l(state._historyObj)
-		state._historyObj.push(url)
-	},
-
-	/**
-	*	state Changing
+	*	Auth State Changing
 	*/
 
 	addChangeListener(f){
@@ -202,7 +140,6 @@ const AuthStore = Object.assign({}, EventEmitter.prototype, {
 	},
 
 	emitChange(from){
-		l(' STORE : EMIT CHANGE', from )
 		this.emit(events.CHANGE_STATE)
 	},
 
@@ -212,17 +149,7 @@ const AuthStore = Object.assign({}, EventEmitter.prototype, {
 
 
 	/**
-	*	Grabbing HistoryObj from React-Router
-	*/
-
-	setHistoryObject(obj){
-		//l('_historyObj : ', obj)
-		state._historyObj = obj
-	},
-
-
-	/**
-	*	Auth
+	*	User
 	*/
 
 	getUserInfo(){
@@ -235,4 +162,4 @@ const AuthStore = Object.assign({}, EventEmitter.prototype, {
 
 
 
-export default AppStore
+export default AuthStore

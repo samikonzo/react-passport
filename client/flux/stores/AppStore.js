@@ -132,39 +132,8 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 
 
 
-AppStore.dispatchToken = Dispatcher.register( function(action){
+Dispatcher.register( function(action){
 	switch(action.type){
-
-		case Constants.CHECK_AUTH_STARTED : {
-			//l(' CHECK_AUTH_STARTED ')
-			state.isLoading = true
-			AppStore.emitChange(' CHECK_AUTH_STARTED ')
-			break;
-		}
-
-		case Constants.CHECK_AUTH_SUCCESS : {
-			//l(' CHECK_AUTH_SUCCESS ')
-			var result = action.data
-
-			if(result) state.isLogged = true
-			else state.isLogged = false
-
-			state.isLoading = false
-
-			AppStore.emitChange('CHECK_AUTH_SUCCESS')
-			break;
-		}
-
-		case Constants.CHECK_AUTH_FAIL : {
-			//l(' CHECK_AUTH_FAIL ')
-			var err = action.error
-			l(err)
-
-			state.isLoading = false
-
-			AppStore.emitChange(' CHECK_AUTH_FAIL ')
-			break;
-		}
 
 		case Constants.SET_HISTORY_OBJECT : {
 			AppStore.setHistoryObject(action.data)
@@ -181,74 +150,11 @@ AppStore.dispatchToken = Dispatcher.register( function(action){
 			break;
 		}
 
-		case Constants.LOGOUT : {
-			//l(' LOGOUT ')
-			state.isLogged = false
-			//AppStore.emitChange()
-			break;
-		}
-
-		case Constants.LOGIN_TRY : {
-			//l(' LOGIN_TRY ')
-			state.isLoading = true
-			AppStore.emitChange(' LOGIN_TRY ')
-			break;
-		}
-
-		case Constants.LOGIN_SUCCESS : {
-			//l(' LOGIN_SUCCESS ')
-			// TODO : smooth reload page through PageChange
-
-			AppStore.emitPagePreChange()
-				.then(() => {
-					state.isLoading = false
-					state.isLogged = true
-					state.error = false
-					state.message = undefined
-				
-					AppStore.emitChange(' LOGIN_SUCCESS ')
-				})
-
-			break;
-		}
-
-		case Constants.LOGIN_FAIL : {
-			//l(' LOGIN_FAIL ')
-			state.isLoading = false
-			state.error = true
-			state.message = 'wrong pair login / password'
-
-			AppStore.emitChange(' LOGIN_FAIL ')
-			break;
-		}
-
-		case Constants.AFTER_REGISTRATION_LOGIN : {
-			//l(' AFTER_REGISTRATION_LOGIN ')
-			state.isLogged = true;
-			
-			break;
-		}
-
 		case Constants.LOADING : {
 			//state.isLoading = true
 			//AppStore.emitChange(' LOADING ')
 		}
 
-		case Constants.USER_GET_USER_INFO_SUCCESS : { 
-			/*state.isLoading = false
-			state.user = action.user
-			l('user : ', state.user)
-			AppStore.emitChange()*/
-			break;
-		}
-
-		case Constants.USER_GET_USER_INFO_FAIL : { 
-			/*state.isLoading = false
-			state.user = 'no user info'
-			l('err : ', action.err)
-			AppStore.emitChange()*/
-			break;
-		}
 	}
 })	
 

@@ -40,6 +40,9 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 app.use('/', routes)
 //////////////
+l(__dirname + '/public')
+
+app.use(express.static(path.join(__dirname, '../', '/public')))
 
 
 // session id

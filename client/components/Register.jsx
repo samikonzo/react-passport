@@ -10,50 +10,66 @@ class Register extends React.Component{
 	constructor(props){
 		super(props)
 
-		this.state = RegisterStore.getState()
+		this.state = Object.assign({
+			hidden: true
+		}, RegisterStore.getState())
 
 		this._onChangeEvent = this._onChangeEvent.bind(this)
-		this._hideContentRegister = this._hideContentRegister.bind(this)
 		this._onSubmit = this._onSubmit.bind(this)
 		this._delayedCheckUsernameAvailable = this._delayedCheckUsernameAvailable.bind(this)
 		this._checkUsernameAvailable = this._checkUsernameAvailable.bind(this)
 		this._checkPasswordAvailable = this._checkPasswordAvailable.bind(this)
 		this._isFormSucces = this._isFormSucces.bind(this)
+		this._hideContent_Register = this._hideContent_Register.bind(this)
+		this._showContent_Register = this._showContent_Register.bind(this)
 	}
 
 	componentWillMount(){
 		RegisterStore.addChangeListener(this._onChangeEvent)
-		AppStore.addPageChangeListener(this._hideContentRegister)
+		AppStore.addPageChangeListener(this._hideContent_Register)
 		AppActions.registerClearFormState()
+	}
+
+	componentDidMount(){
+		setTimeout( () => { 
+			this._showContent_Register()
+		}, 100)
 	}
 
 	componentWillUnmount(){
 		RegisterStore.removeChangeListener(this._onChangeEvent)
-		AppStore.removePageChangeListener(this._hideContentRegister)
+		AppStore.removePageChangeListener(this._hideContent_Register)
 	}
 
 	_onChangeEvent(){
 		this.setState(RegisterStore.getState())
 	}
 
-	_hideContentRegister(){
+
+	_showContent_Register(){
+		this.setState({
+			hidden : false
+		})
+	}
+
+	_hideContent_Register(){
 		return new Promise( resolve => {
-			var i = 0
-			var interval = setInterval( () => {
-				l('time : ', i++)
-			}, 1000)
+			this.setState({
+				hidden: true,
+			})
 
 			setTimeout(() => {
 				resolve()
-				clearInterval(interval)
-			}, 5000)
+			}, 500)
 		})
 	}
 
 	_onSubmit(e){
 		e.preventDefault()
 
-		if(!this._isFormSucces) return
+		if(this.state.waiting) return
+		if(this.state.registred) return
+		if(!this._isFormSucces()) return
 
 		var formdata = new FormData(e.target)
 
@@ -91,7 +107,7 @@ class Register extends React.Component{
 			return
 		}
 
-		// everything pk
+		// everything ok -> send to server for check availability
 		AppActions.registerCheckUsernameAvailable(username)
 	}
 
@@ -108,46 +124,61 @@ class Register extends React.Component{
 
 	_isFormSucces(){
 		// TODO : some tests		
+		if(!this.state.usernameAvailable || !this.state.passwordAvailable) return false
+
 		return true
 	}
 
 	render(){
+
 		//l(this.state)
 
-		var usernameClassName = 'Register-username '
+		// wrapper
+		var wrapperClassName = 'Register_wrapper '
+		if(this.state.hidden) wrapperClassName += 'Register_wrapper--hidden'
+
+
+		// username
+		var usernameClassName = 'Register_username '
 		if(this.state.usernameAvailable != undefined){
-			if(this.state.usernameAvailable) usernameClassName += 'Register-username--available'
-			else usernameClassName += 'Register-username--not-available'
+			if(this.state.usernameAvailable) usernameClassName += 'Register_username--available'
+			else usernameClassName += 'Register_username--not-available'
 		}
 
-		var usernameLoadingClassName = 'Register-username__loading '
-		if(this.state.usernameLoading) usernameLoadingClassName += 'Register-username__loading--showed'
 		
-		var usernameErrorClassName = 'Register-username__error '
+		var usernameErrorClassName = 'Register_username__error '
 		var usernameErrorMessage = ''
 		if(this.state.errors.usernameError.error){
-			usernameErrorClassName += 'Register-username__error--showed'
+			usernameErrorClassName += 'Register_username__error--showed'
 			usernameErrorMessage = this.state.errors.usernameError.message
 		}
 
 
-		var passwordLoadingClassName = 'Register-password__loading '
-		if(this.state.usernameLoading) passwordLoadingClassName += 'Register-password__loading--showed'
+		// password
+		var passwordClassName = 'Register_password '
+		if(this.state.passwordAvailable != undefined){
+			if(this.state.passwordAvailable) passwordClassName += 'Register_password--available'
+			else passwordClassName += 'Register_password--not-available'
+		}	
 		
-		var passwordErrorClassName = 'Register-password__error '
+		var passwordErrorClassName = 'Register_password__error '
 		var passwordErrorMessage = ''
 		if(this.state.errors.passwordError.error){
-			passwordErrorClassName += 'Register-password__error--showed'
+			passwordErrorClassName += 'Register_password__error--showed'
 			passwordErrorMessage = this.state.errors.passwordError.message
 		}
 
 
+		// loading 
+		var Register_loadingClassName = 'Register_loading '
+		if(this.state.usernameLoading) Register_loadingClassName += 'Register_loading--showed'
+		
 
 		return(
-			<div>
+			<div className={wrapperClassName}>
 				<h1>Register</h1>
 				<form action="/register" method="post" onSubmit={this._onSubmit}>
-					<label className="Register-username__label">
+					<label className="Register_username__label">
 						username : 
 						<input 
 							type="text" 
@@ -158,11 +189,11 @@ class Register extends React.Component{
 							onChange={this._delayedCheckUsernameAvailable}
 							className={usernameClassName}/>
 
-						<div className={usernameLoadingClassName}></div>
+						
 						<div className={usernameErrorClassName}>{usernameErrorMessage}</div>
 					</label>
 
-					<label className="Register-password__label">
+					<label className="Register_password__label">
 						password : 
 						<input 
 							type="password" 
@@ -170,16 +201,20 @@ class Register extends React.Component{
 							autoComplete="new-password"
 							required
 							onChange={this._checkPasswordAvailable}
-							className="Register-password" />
+							className={passwordClassName} />
 
-						<div className={passwordLoadingClassName}></div>
+						{/*<div className={passwordLoadingClassName}></div>*/}
 						<div className={passwordErrorClassName}>{passwordErrorMessage}</div>	
 					</label>
 
 					<input type="submit" value="register" className="Register-submitBtn" />
+
+
 				</form>
 
 				<Delalink to="/"> login </Delalink>
+				
+				<div className={Register_loadingClassName}></div>
 			</div>
 		)
 	}

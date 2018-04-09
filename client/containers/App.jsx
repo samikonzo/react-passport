@@ -3,11 +3,14 @@ import { Link, Route, Switch } from 'react-router-dom'
 import AppActions from '../flux/actions/AppActions.js'
 import AppStore from '../flux/stores/AppStore.js'
 
+import './App.less'
+
 // Components
 import Login from '../components/Login.jsx'
 import LogoutBtn from '../components/LogoutBtn.jsx'
 import Register from '../components/Register.jsx'
 import Home from '../components/Home.jsx'
+import PageLoading from '../components/PageLoading.jsx'
 
 class App extends React.Component{
 	constructor(props){
@@ -61,7 +64,7 @@ class App extends React.Component{
 	_onPageChangePreaparingApp(){}
 
 	_onPageChangeApp(){
-		l('_onPageChangeApp')
+		//l('_onPageChangeApp')
 		this.setState(AppStore.getState(),() => {
 			l(this.state)
 		})
@@ -105,7 +108,6 @@ class App extends React.Component{
 		}
 
 		// Grabber Link needs for grab historyObj from Link
-		
 		var GrabberLink
 		if(this.state._historyObj == undefined){
 			GrabberLink = (<Link to='/' ref={elem => {this._historyObjGrabber(elem)}}/>)

@@ -7,10 +7,23 @@ const AppActions ={
 	*	Auth 
 	*/
 	register(formdata){
-		l(' ACTION : register')
+		//l(' ACTION : register')
+
+		Dispatcher.dispatch({
+			type: Constants.REGISTRATION_WAIT
+		})
+
 		api.register(formdata)
 			.then(
 				ok => {
+
+					Dispatcher.dispatch({
+						type: Constants.REGISTRATION_SUCCESS
+					})
+
+					Dispatcher.dispatch({
+						type: Constants.AFTER_REGISTRATION_LOGIN
+					})
 
 					var url = '/'
 					Dispatcher.dispatch({
@@ -19,12 +32,9 @@ const AppActions ={
 						url : url,
 						href : url,
 					})
-
 					
-					Dispatcher.dispatch({
-						type: Constants.AFTER_REGISTRATION_LOGIN
-					})
 				},
+
 				err => {
 					Dispatcher.dispatch({
 						type: Constants.REGISTRATION_FAIL,
@@ -92,7 +102,7 @@ const AppActions ={
 	},
 
 	login(formdata){
-		l(' ACTION : login')
+		//l(' ACTION : login')
 
 		Dispatcher.dispatch({
 			type: Constants.LOGIN_TRY
@@ -128,7 +138,7 @@ const AppActions ={
 	},
 
 	logout(){
-		l(' ACTION : logout')
+		//l(' ACTION : logout')
 		api.logout()
 			.then(
 				() => {
@@ -150,7 +160,7 @@ const AppActions ={
 	},
 
 	checkAuth(){
-		l(' ACTION : checkAuth')
+		//l(' ACTION : checkAuth')
 		Dispatcher.dispatch({
 			type: Constants.CHECK_AUTH_STARTED
 		})
@@ -177,7 +187,7 @@ const AppActions ={
 	*	Page changing
 	*/	
 	setHistoryObj(obj){
-		l(' ACTION : setHistoryObj')
+		//l(' ACTION : setHistoryObj')
 		Dispatcher.dispatch({
 			type: Constants.SET_HISTORY_OBJECT,
 			data: obj,
@@ -187,7 +197,7 @@ const AppActions ={
 
 		setTimeout(function f(){
 			var dispatching = Dispatcher.isDispatching()
-			l('dispatching : ', dispatching)
+			//l('dispatching : ', dispatching)
 			if(dispatching){
 				setTimeout(f, 1000)
 			}
@@ -197,14 +207,14 @@ const AppActions ={
 	},
 
 	popstate(e){
-		l('ACTION : popstate')
+		//l('ACTION : popstate')
 		/*Dispatcher.dispatch({
 			type : Constants.POP_STATE
 		})*/
 	},
 
 	redirectTo(url){
-		l('ACTION : redirectTo')
+		//l('ACTION : redirectTo')
 		Dispatcher.dispatch({
 			type: Constants.REDIRECT_TO,
 			data: url,
@@ -218,7 +228,7 @@ const AppActions ={
 	*	User
 	*/
 	getUserInfo(){
-		l('ACTION : getUserInfo')
+		//l('ACTION : getUserInfo')
 		l(Dispatcher.isDispatching())
 
 		Dispatcher.dispatch({
@@ -280,9 +290,11 @@ function dispatchingCheck(fName, args){
 				} else {
 
 					if(Dispatcher._queue){
+
+						// wrong method, cuz delayedF must get first _queue object
 						var delayedF = Dispatcher._queue.pop()
 						
-						AppActions[delayedF.fname].apply(null, delayedF.arguments)
+						AppActions[delayedF.fName].apply(null, delayedF.arguments)
 
 						if(!Dispatcher._queue.length){
 							delete Dispatcher._queue
@@ -303,62 +315,15 @@ function dispatchingCheck(fName, args){
 	}
 }
 
-for(let fname in AppActions){
-	let savedF = AppActions[fname]
+for(let fName in AppActions){
+	let savedF = AppActions[fName]
 
-	AppActions[fname] = () => {
-		if(dispatchingCheck(fname, arguments))	return
+	AppActions[fName] = function(){
+		if(dispatchingCheck(fName, arguments))	return
 	
+		//l('AppActions -', fName, ' : ', arguments)
 		savedF.apply(null, arguments)
 	}
-
-	/*AppActions[fname] = function(){
-		l(fname)
-		
-
-		if(Dispatcher.isDispatching()){
-			if(!AppActions._queue){
-				AppActions._queue = []
-			}
-			
-			AppActions._queue.push({fname : fname, arguments: arguments})
-
-			if(!AppActions._queueTimer){
-				AppActions._queueTimer = setTimeout( function timerF(){
-					if(Dispatcher.isDispatching()){
-						AppActions._queueTimer = setTimeout(timerF, 100)
-					} else {
-
-						// dublicate =(
-						if(AppActions._queue){
-							var delayedF = AppActions._queue.pop()
-
-							setTimeout(() => {
-								AppActions[delayedF.fname].apply(null, delayedF.arguments)
-
-								if(!AppActions._queue.length) delete AppActions._queue
-							}, 100)
-						} 
-					}
-				}, 100)
-			}
-
-
-			
-		} else {
-			savedF.apply(null, arguments)
-
-			if(AppActions._queue){
-				var delayedF = AppActions._queue.pop()
-
-				setTimeout(() => {
-					AppActions[delayedF.fname].apply(null, delayedF.arguments)
-
-					if(!AppActions._queue.length) delete AppActions._queue
-				}, 100)
-			} 
-		}
-	}*/
 }
 
 

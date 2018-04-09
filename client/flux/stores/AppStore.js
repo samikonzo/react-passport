@@ -53,11 +53,11 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 
 					result.then(
 						fReady => {
-							l('+1 resolved')
+							//l('+1 resolved')
 							promisesReady++
 
 							if(checkAllReady){
-								l('all ready')
+								//l('all ready')
 								resolve()
 							}
 						}
@@ -66,13 +66,13 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 			})
 
 			if(!promisesFuncs){
-				l('all ready')
+				//l('all ready')
 				resolve()
 			}
 
 			function checkAllReady(){
-				l('promisesReady : ', promisesReady)
-				l('promisesFuncs :', promisesFuncs)
+				//l('promisesReady : ', promisesReady)
+				//l('promisesFuncs :', promisesFuncs)
 				return promisesReady == promisesFuncs
 			}
 		})
@@ -136,14 +136,14 @@ AppStore.dispatchToken = Dispatcher.register( function(action){
 	switch(action.type){
 
 		case Constants.CHECK_AUTH_STARTED : {
-			l(' CHECK_AUTH_STARTED ')
+			//l(' CHECK_AUTH_STARTED ')
 			state.isLoading = true
 			AppStore.emitChange(' CHECK_AUTH_STARTED ')
 			break;
 		}
 
 		case Constants.CHECK_AUTH_SUCCESS : {
-			l(' CHECK_AUTH_SUCCESS ')
+			//l(' CHECK_AUTH_SUCCESS ')
 			var result = action.data
 
 			if(result) state.isLogged = true
@@ -156,7 +156,7 @@ AppStore.dispatchToken = Dispatcher.register( function(action){
 		}
 
 		case Constants.CHECK_AUTH_FAIL : {
-			l(' CHECK_AUTH_FAIL ')
+			//l(' CHECK_AUTH_FAIL ')
 			var err = action.error
 			l(err)
 
@@ -172,7 +172,7 @@ AppStore.dispatchToken = Dispatcher.register( function(action){
 		}
 
 		case Constants.REDIRECT_TO : {
-			l(' REDIRECT_TO ')
+			//l(' REDIRECT_TO ')
 			AppStore.emitPagePreChange()
 				.then(() => {
 					AppStore.redirectTo(action.url)
@@ -182,21 +182,21 @@ AppStore.dispatchToken = Dispatcher.register( function(action){
 		}
 
 		case Constants.LOGOUT : {
-			l(' LOGOUT ')
+			//l(' LOGOUT ')
 			state.isLogged = false
 			//AppStore.emitChange()
 			break;
 		}
 
 		case Constants.LOGIN_TRY : {
-			l(' LOGIN_TRY ')
+			//l(' LOGIN_TRY ')
 			state.isLoading = true
 			AppStore.emitChange(' LOGIN_TRY ')
 			break;
 		}
 
 		case Constants.LOGIN_SUCCESS : {
-			l(' LOGIN_SUCCESS ')
+			//l(' LOGIN_SUCCESS ')
 			// TODO : smooth reload page through PageChange
 
 			AppStore.emitPagePreChange()
@@ -213,7 +213,7 @@ AppStore.dispatchToken = Dispatcher.register( function(action){
 		}
 
 		case Constants.LOGIN_FAIL : {
-			l(' LOGIN_FAIL ')
+			//l(' LOGIN_FAIL ')
 			state.isLoading = false
 			state.error = true
 			state.message = 'wrong pair login / password'
@@ -223,15 +223,15 @@ AppStore.dispatchToken = Dispatcher.register( function(action){
 		}
 
 		case Constants.AFTER_REGISTRATION_LOGIN : {
-			l(' AFTER_REGISTRATION_LOGIN ')
+			//l(' AFTER_REGISTRATION_LOGIN ')
 			state.isLogged = true;
 			
 			break;
 		}
 
 		case Constants.LOADING : {
-			state.isLoading = true
-			AppStore.emitChange(' LOADING ')
+			//state.isLoading = true
+			//AppStore.emitChange(' LOADING ')
 		}
 
 		case Constants.USER_GET_USER_INFO_SUCCESS : { 

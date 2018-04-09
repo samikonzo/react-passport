@@ -28,7 +28,10 @@ var initState = {
 			error : false,
 			message : undefined,
 		}
-	}
+	},
+
+	waiting : false, // waiting response from server
+	registred : false, // already registred
 }
 
 var state = Object.assign({}, initState) 
@@ -36,8 +39,22 @@ var state = Object.assign({}, initState)
 Dispatcher.register((action) => {
 	switch(action.type){
 
+		case Constants.REGISTRATION_WAIT : {
+			state.waiting = true
+			RegisterStore.emitChange()
+			break;
+		}
+
 		case Constants.REGISTRATION_FAIL : {
-			l('REGISTRATION_FAIL')
+			state.waiting = false
+			RegisterStore.emitChange()
+			break;
+		}
+
+		case Constants.REGISTRATION_SUCCESS : {
+			state.waiting = false
+			state.registred = true
+			RegisterStore.emitChange()
 			break;
 		}
 

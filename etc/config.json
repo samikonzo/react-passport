@@ -6,6 +6,6 @@
 	},
 
 	"mongo" : {
-		"path": "H:/mongodb/bin/"
+		"path": "D:/workspace/mongodb/bin/"
 	}
 }

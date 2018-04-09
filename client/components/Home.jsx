@@ -25,15 +25,15 @@ class Home extends React.Component{
 
 	_hideConentHome(){
 		return new Promise(resolve => {
-			var i = 0
+			/*var i = 0
 			var interval = setInterval( () => {
 				l('time : ', i++)
-			}, 1000)
+			}, 1000)*/
 
 			setTimeout(() => {
 				resolve()
-				clearInterval(interval)
-			}, 2000)
+				//clearInterval(interval)
+			}, 1000)
 		})
 	}
 

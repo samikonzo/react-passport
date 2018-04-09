@@ -3,43 +3,61 @@ import AppActions from '../flux/actions/AppActions.js'
 import AppStore from '../flux/stores/AppStore.js'
 import Delaylink from './etc/Delaylink.jsx'
 
+import './styles/Login.less'
+
 class Login extends React.Component{
 	constructor(props){
 		super(props)
 
+		this.state = {
+			hidden : true,
+		}
+
 		this._onSubmit = this._onSubmit.bind(this)
 		this._isFormSucces = this._isFormSucces.bind(this)
-		this._hideContentLogin = this._hideContentLogin.bind(this)
-		this._showContent = this._showContent.bind(this)
+		this._hideContent_Login = this._hideContent_Login.bind(this)
+		this._showContent_Login = this._showContent_Login.bind(this)
 	}
 
 
 	componentWillMount(){
 		//AppActions.checkAuth()
-		AppStore.addPageChangeListener(this._hideContentLogin)
+		AppStore.addPageChangeListener(this._hideContent_Login)
+	}
+
+	componentDidMount(){
+		setTimeout( () => { 
+			this._showContent_Login()
+		}, 100)
 	}
 
 	componentWillUnmount(){
-		AppStore.removePageChangeListener(this._hideContentLogin)
+		AppStore.removePageChangeListener(this._hideContent_Login)
 	}
 
-	_hideContentLogin(){
-		return new Promise(resolve => {
-			var i = 0
-			var interval = setInterval( () => {
-				l('time : ', i++)
-			}, 1000)
-
-			setTimeout(() => {
-				resolve()
-				clearInterval(interval)
-			}, 2000)
+	_showContent_Login(){
+		this.setState({
+			hidden : false
 		})
 	}
 
-	_showContent(){
+	_hideContent_Login(){
+		return new Promise(resolve => {
+			/*var i = 0
+			var interval = setInterval( () => {
+				l('time : ', i++)
+			}, 1000)*/
+			this.setState({
+				hidden: true
+			})
 
+			setTimeout(() => {
+				resolve()
+				//clearInterval(interval)
+			}, 500)
+		})
 	}
+
 
 	_onSubmit(e){
 		e.preventDefault()
@@ -55,8 +73,12 @@ class Login extends React.Component{
 	}
 
 	render(){
+
+		var wrapperClassName = 'Login_wrapper '
+		if(this.state.hidden) wrapperClassName += 'Login_wrapper--hidden'
+
 		return(
-			<div>
+			<div className={wrapperClassName}>
 				<h1>Login Page </h1>
 				<form action="/login" method="post" onSubmit={this._onSubmit}>
 					<label>username : <input type="text" name="username"/></label>

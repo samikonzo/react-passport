@@ -262,10 +262,57 @@ const AppActions ={
 var l = console.log;
 
 
+function dispatchingCheck(fName, args){
+	if(Dispatcher.isDispatching()){
+
+		if(!Dispatcher._queue) Dispatcher._queue = []
+		Dispatcher._queue.push({
+			fName: fName,
+			arguments: args,
+		})	
+
+
+		if(!Dispatcher._queueTimer){
+			Dispatcher._queueTimer = setTimeout( function f(){
+
+				if(Dispatcher.isDispatching()){
+					Dispatcher._queueTimer = setTimeout( f, 100 )
+				} else {
+
+					if(Dispatcher._queue){
+						var delayedF = Dispatcher._queue.pop()
+						
+						AppActions[delayedF.fname].apply(null, delayedF.arguments)
+
+						if(!Dispatcher._queue.length){
+							delete Dispatcher._queue
+							delete Dispatcher._queueTimer	
+						} else {
+							Dispatcher._queueTimer = setTimeout( f, 100 )
+						}
+					}
+
+				}
+
+			}, 100)	
+		} 
+
+		return true
+	} else {
+		return false
+	}
+}
+
 for(let fname in AppActions){
 	let savedF = AppActions[fname]
 
-	AppActions[fname] = function(){
+	AppActions[fname] = () => {
+		if(dispatchingCheck(fname, arguments))	return
+	
+		savedF.apply(null, arguments)
+	}
+
+	/*AppActions[fname] = function(){
 		l(fname)
 		
 
@@ -311,7 +358,7 @@ for(let fname in AppActions){
 				}, 100)
 			} 
 		}
-	}
+	}*/
 }
 
 

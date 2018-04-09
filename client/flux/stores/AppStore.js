@@ -65,7 +65,7 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 				}
 			})
 
-			if(checkAllReady){
+			if(!promisesFuncs){
 				l('all ready')
 				resolve()
 			}

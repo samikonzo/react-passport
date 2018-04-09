@@ -52,7 +52,7 @@ class App extends React.Component{
 			if(this.state.isLogged && 
 			 	!this.state.isLoading &&
 			 	 !this.state.user){
-				//AppActions.getUserInfo()
+				AppActions.getUserInfo()
 			}
 		})
 

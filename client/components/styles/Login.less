@@ -1,9 +1,50 @@
 .Login_wrapper{
+	position: relative;
+	min-height: 100%;
+	height: 100%;
+	max-width: 400px;
+	margin: auto;
 
-	opacity : 1;
+	display: flex;
+	flex-flow: column;
+	justify-content: center;
+	align-items: center;
+	opacity: 1;
 	transition: .5s;
 
 	&--hidden{
 		opacity: 0;
 	}
+}
+
+.Login_username{
+	border: 1px solid transparent;
+	border-bottom: 1px solid grey;
+	padding: 2px 5px;
+	outline: none;
+
+	&--available{
+		border-bottom: 1px solid green;
+	}
+
+	&--not-available{
+		border-bottom: 1px solid red;
+	}
+
+	&__label{
+		display: block;
+		position: relative;
+		border: 1px dashed blue;
+		margin: 10px;
+	}
+}
+
+.Login_password{
+	.Login_username;
+}
+
+.Login-submitBtn{
+	display: block;
+	min-width: 100px;
+	margin: auto;
 }

@@ -214,7 +214,7 @@ class Register extends React.Component{
 
 				<Delalink to="/"> login </Delalink>
 				
-				<div className={Register_loadingClassName}></div>
+				{/*<div className={Register_loadingClassName}></div>*/}
 			</div>
 		)
 	}

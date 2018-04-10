@@ -5,7 +5,7 @@ class Logout extends React.Component{
 	render(){
 		return(
 			<div>
-				<button onClick={AppActions.logout}> logout </button>
+				<button onClick={AppActions.authLogout}> logout </button>
 			</div>
 		)
 	}

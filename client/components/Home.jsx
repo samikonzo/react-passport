@@ -8,7 +8,7 @@ class Home extends React.Component{
 		super(props)
 
 		this.state = {
-			user : AppStore.getUserInfo()	
+			//user : AppStore.getUserInfo()	
 		}
 
 		this._hideConentHome = this._hideConentHome.bind(this)

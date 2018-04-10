@@ -9,6 +9,7 @@ const AppActions ={
 	*	Register
 	*/
 	register(formdata){
+		l('register')
 		//l(' ACTION : register')
 
 		Dispatcher.dispatch({
@@ -23,17 +24,19 @@ const AppActions ={
 						type: Constants.REGISTRATION_SUCCESS
 					})
 
-					Dispatcher.dispatch({
-						type: Constants.AFTER_REGISTRATION_LOGIN
-					})
-
 					var url = '/'
 					Dispatcher.dispatch({
-						type: Constants.REDIRECT_TO,
+						type: Constants.PAGE_REDIRECT_TO,
 						data: url,
 						url : url,
 						href : url,
 					})
+					
+					Dispatcher.dispatch({
+						//type: Constants.AFTER_REGISTRATION_LOGIN
+						type: Constants.AUTH_LOGIN_SUCCESS
+					})
+
 					
 				},
 
@@ -49,6 +52,7 @@ const AppActions ={
 	},
 
 	registerCheckUsernameFail(err){
+		l('registerCheckUsernameFail')
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CHECK_USERNAME_FAIL,
 			error: err,
@@ -58,6 +62,7 @@ const AppActions ={
 	},
 
 	registerCheckUsernameAvailable(username){
+		l('registerCheckUsernameAvailable')
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CHECK_USERNAME_LOADING
 		})
@@ -83,6 +88,7 @@ const AppActions ={
 	},
 
 	registerCheckPasswordFail(err){
+		l('registerCheckPasswordFail')
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CHECK_PASSWORD_FAIL,
 			error: err,
@@ -92,14 +98,16 @@ const AppActions ={
 	},
 
 	registerCheckPasswordSuccess(){
+		l('registerCheckPasswordSuccess')
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CHECK_PASSWORD_SUCCESS,
 		})
 	},
 
 	registerClearFormState(){
+		l('registerClearFormState')
 		Dispatcher.dispatch({
-			type: Constants.REGISTER_CLEAR_CHECK_FORM_STATE,
+			type: Constants.REGISTER_CLEAR_FORM_STATE,
 		})
 	},
 
@@ -109,8 +117,8 @@ const AppActions ={
 	*	Auth 
 	*/
 	authLogin(formdata){
-		//l(' ACTION : login')
-
+		l('authLogin')
+		l(' ACTION : login')
 		Dispatcher.dispatch({
 			type: Constants.AUTH_LOGIN_TRY
 		})
@@ -119,54 +127,56 @@ const AppActions ={
 			.then(
 				result => {
 					var url = '/'
-
 					Dispatcher.dispatch({
-						type: Constants.AUTH_LOGIN_SUCCESS,
-					})
-
-					Dispatcher.dispatch({
-						type: Constants.REDIRECT_TO,
+						type: Constants.PAGE_REDIRECT_TO,
 						data: url,
 						url : url,
 						href : url,
 					})
+
+					Dispatcher.dispatch({
+						type: Constants.AUTH_LOGIN_SUCCESS,
+						message: result.data
+					})
+
 				
 				},
 				err => {
-					l(' Login err : ', err)
 					Dispatcher.dispatch({
 						type: Constants.AUTH_LOGIN_FAIL,
-						result: err,
-						err: err,
 						error: err,
+						message: err.response.data,
 					})
 				}
 			)
 	},
 
 	authLogout(){
+		l('authLogout')
 		//l(' ACTION : logout')
 		api.logout()
 			.then(
 				() => {
+					Dispatcher.dispatch({
+						type: Constants.AUTH_LOGOUT,
+					})
+
 					var url = '/'
 
 					Dispatcher.dispatch({
-						type: Constants.REDIRECT_TO,
+						type: Constants.PAGE_REDIRECT_TO,
 						data: url,
 						url : url,
 						href : url,
 					})
 
-					Dispatcher.dispatch({
-						type: Constants.AUTH_LOGOUT,
-					})
 
 				}
 			)
 	},
 
 	authCheckAuth(){
+		l('authCheckAuth')
 		//l(' ACTION : checkAuth')
 		Dispatcher.dispatch({
 			type: Constants.AUTH_CHECK_AUTH_STARTED
@@ -191,6 +201,7 @@ const AppActions ={
 	},
 
 	authGetUserInfo(){
+		l('authGetUserInfo')
 		//l('ACTION : getUserInfo')
 		l(Dispatcher.isDispatching())
 
@@ -233,9 +244,10 @@ const AppActions ={
 	*	Page changing
 	*/	
 	pageSetHistoryObj(obj){
+		l('pageSetHistoryObj')
 		//l(' ACTION : setHistoryObj')
 		Dispatcher.dispatch({
-			type: Constants.SET_HISTORY_OBJECT,
+			type: Constants.PAGE_SET_HISTORY_OBJECT,
 			data: obj,
 			object: obj,
 			obj: obj,
@@ -252,6 +264,7 @@ const AppActions ={
 	},
 
 	pagePopstate(e){
+		l('pagePopstate')
 		//l('ACTION : popstate')
 		/*Dispatcher.dispatch({
 			type : Constants.POP_STATE
@@ -259,9 +272,10 @@ const AppActions ={
 	},
 
 	pageRedirectTo(url){
+		l('pageRedirectTo')
 		//l('ACTION : redirectTo')
 		Dispatcher.dispatch({
-			type: Constants.REDIRECT_TO,
+			type: Constants.PAGE_REDIRECT_TO,
 			data: url,
 			url : url,
 			href : url,

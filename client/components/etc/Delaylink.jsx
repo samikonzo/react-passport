@@ -18,7 +18,7 @@ class DelayLink extends React.Component{
 		const { replace, to} = this.props
 		const { history: historyObj  } = this.context.router
 
-		AppActions.redirectTo(to, historyObj)
+		AppActions.pageRedirectTo(to, historyObj)
 
 	}
 

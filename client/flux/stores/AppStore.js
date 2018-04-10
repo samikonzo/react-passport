@@ -1,29 +1,55 @@
 import Dispatcher from '../dispatcher/AppDispatcher.js'
 import Constants from '../constants/AppConstants.js'
-import AppActions from '../actions/AppActions.js'
 import { EventEmitter } from 'events'
 
 
 const events = {
-	'CHANGE_STATE' : 'CHANGE_STATE',
-	'PAGE_PRE_CHANGE' : 'PAGE_PRE_CHANGE' ,
+	'STATE_CHANGE' : 'STATE_CHANGE',
+	'PAGE_CHANGE_PREPARE' : 'PAGE_CHANGE_PREPARE' ,
 	'PAGE_CHANGE' : 'PAGE_CHANGE' ,
 }
 
 
 const state = {
-	isLoading: false,
-	_historyObj : undefined,
-	
-	/*isLoading: false,
-	isLogged: false,
+	App_isLoading: false,
 	_historyObj: undefined,
-	error : false,
-	message : undefined,
-	user: undefined,*/
 }
 
+Dispatcher.register( function(action){
+	switch(action.type){
+
+		case Constants.PAGE_SET_HISTORY_OBJECT : {
+			AppStore.setHistoryObject(action.data)
+			AppStore.emitChange()
+			break;
+		}
+
+		case Constants.PAGE_REDIRECT_TO : {
+			//l(' REDIRECT_TO ')
+			state.App_isLoading = true
+			AppStore.emitChange()
+
+			AppStore.emitPageChangePrepare()
+				.then(() => {
+					state.App_isLoading = false		
+					AppStore.redirectTo(action.url)
+					AppStore.emitPageChange()
+					AppStore.emitChange()
+				})
+			break;
+		}
+	}
+})	
+
+
 const AppStore = Object.assign({}, EventEmitter.prototype, {
+
+	//Grabbing HistoryObj from React-Router
+	setHistoryObject(obj){
+		//l('_historyObj : ', obj)
+		state._historyObj = obj
+	},
+
 
 	/**
 	*	Page Changing
@@ -32,22 +58,22 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 	*/
 
 	addPageChangeListener(pagePreaparing, pageChange){
-		this.on(events.PAGE_PRE_CHANGE, pagePreaparing)
+		this.on(events.PAGE_CHANGE_PREPARE, pagePreaparing)
 		if(pageChange != undefined) this.on(events.PAGE_CHANGE, pageChange)
 	},
 
 	removePageChangeListener(pagePreaparing, pageChange){
-		this.removeListener(events.PAGE_PRE_CHANGE, pagePreaparing)
+		this.removeListener(events.PAGE_CHANGE_PREPARE, pagePreaparing)
 		if(pageChange != undefined) this.removeListener(events.PAGE_CHANGE, pageChange)
 	},
 
-	emitPagePreChange(){
+	emitPageChangePrepare(){
 		return new Promise( (resolve, reject) => {
-			var listenersFuncs = this.listeners(events.PAGE_PRE_CHANGE)
+			var listenersFuncs = this.listeners(events.PAGE_CHANGE_PREPARE)
 			var promisesFuncs = 0
 			var promisesReady = 0
 
-			l(listenersFuncs)
+			//l(listenersFuncs)
 
 			listenersFuncs.forEach(f => {
 				var result = f()
@@ -86,80 +112,31 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 	},
 
 	redirectTo(url){
-		// TODO : At first - emitPagePreChange
-		l(state._historyObj)
+		//l(state._historyObj)
 		state._historyObj.push(url)
 	},
 
+
 	/**
-	*	state Changing
+	*	State Change
 	*/
 
 	addChangeListener(f){
-		this.on(events.CHANGE_STATE, f)
+		this.on(events.STATE_CHANGE, f)
 	},
 
 	removeChangeListener(f){
-		this.removeListener(events.CHANGE_STATE, f)
-	},
+		this.removeListener(events.STATE_CHANGE, f)
+	},	
 
-	emitChange(from){
-		l(' STORE : EMIT CHANGE', from )
-		this.emit(events.CHANGE_STATE)
+	emitChange(){
+		this.emit(events.STATE_CHANGE)
 	},
-
+	
 	getState(){
 		return state
 	},
-
-
-	/**
-	*	Grabbing HistoryObj from React-Router
-	*/
-
-	setHistoryObject(obj){
-		//l('_historyObj : ', obj)
-		state._historyObj = obj
-	},
-
-
-	/**
-	*	Auth
-	*/
-
-	getUserInfo(){
-		return state.user
-	}
-
 })
-
-
-
-Dispatcher.register( function(action){
-	switch(action.type){
-
-		case Constants.PAGE_SET_HISTORY_OBJECT : {
-			AppStore.setHistoryObject(action.data)
-			break;
-		}
-
-		case Constants.PAGE_REDIRECT_TO : {
-			//l(' REDIRECT_TO ')
-			AppStore.emitPagePreChange()
-				.then(() => {
-					AppStore.redirectTo(action.url)
-					AppStore.emitPageChange()
-				})
-			break;
-		}
-
-		case Constants.PAGE_LOADING : {
-			//state.isLoading = true
-			//AppStore.emitChange(' LOADING ')
-		}
-
-	}
-})	
 
 
 export default AppStore

@@ -12,6 +12,19 @@ import LogoutBtn from '../components/LogoutBtn.jsx'
 import Register from '../components/Register.jsx'
 import Home from '../components/Home.jsx'
 import PageLoading from '../components/PageLoading.jsx'
+import Loading from '../components/etc/Loading.jsx'
+
+
+
+/**
+*	Description
+*	not trivial system of state changing
+*	if main page is buzy (App_isLoading == true)
+*	then other stores-stateSender waiting in the this.state.waiting
+*	and only after App_isLoading == false new states used
+*/
+
+
 
 class App extends React.Component{
 	constructor(props){
@@ -22,29 +35,29 @@ class App extends React.Component{
 			AuthStore.getState(),
 		)
 	
-
 		this._historyObjGrabber = this._historyObjGrabber.bind(this)
-		/*this._onChangeEvent_App = this._onChangeEvent_App.bind(this)
-		this._onPageChangePreaparingApp = this._onPageChangePreaparingApp.bind(this)
-		this._onPageChangeApp = this._onPageChangeApp.bind(this)
-		*/
+		this._onPageChangePrepare_App = this._onPageChangePrepare_App.bind(this)
+		this._onPageChange_App = this._onPageChange_App.bind(this)
+		this._onAuthChange_App = this._onAuthChange_App.bind(this)
+		this._waitingAdd_App = this._waitingAdd_App.bind(this)
+		this._waitingToState_App = this._waitingToState_App.bind(this)
+		this._onChangeEvent_App = this._onChangeEvent_App.bind(this)
 	}
 
 	componentWillMount(){
-		/*AppStore.addChangeListener(this._onChangeEvent_App)
-		AppStore.addPageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)
-		AppActions.checkAuth()*/
+		AppStore.addChangeListener(this._onChangeEvent_App)
+		AppStore.addPageChangeListener(this._onPageChangePrepare_App, this._onPageChange_App)
+		AuthStore.addChangeListener(this._onAuthChange_App)
 
+		
+		//AppActions.authCheckAuth()
 
-		/*window.addEventListener('popstate', e => {
-			e.preventDefault()
-			AppActions.popstate()
-		})*/
 	}
 
 	componentWillUnmount(){
-		/*AppStore.removeChangeListener(this._onChangeEvent_App)
-		AppStore.removePageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)*/
+		AppStore.removeChangeListener(this._onChangeEvent_App)
+		AppStore.removePageChangeListener(this._onPageChangePrepare_App, this._onPageChange_App)
+		AuthStore.removeChangeListener(this._onAuthChange_App)
 	}
 
 	componentWillReceiveProps(nextProps){
@@ -52,25 +65,50 @@ class App extends React.Component{
 	}
 
 	_onChangeEvent_App(){
-		//l('_onChangeEvent_App')
-		//l('_onChangeEvent_App : ', AppStore.getState())
-		/*this.setState(AppStore.getState(), () => {
-			if(this.state.isLogged && 
-			 	!this.state.isLoading &&
-			 	 !this.state.user){
-				AppActions.getUserInfo()
-			}
-		})*/
-
+		this.setState(AppStore.getState(),this._waitingToState_App)
 	}
 
-	_onPageChangePreaparingApp(){}
+	_onPageChangePrepare_App(){
+	}
 
-	_onPageChangeApp(){
-		//l('_onPageChangeApp')
-		/*this.setState(AppStore.getState(),() => {
-			l(this.state)
-		})*/
+	_onPageChange_App(){
+	}
+
+	_onAuthChange_App(){
+		var AuthState = AuthStore.getState()
+
+		if(this.state.App_isLoading){
+			this._waitingAdd_App( AuthState )
+		} else {
+			this.setState( AuthState )
+		}
+	}
+
+	_waitingAdd_App(state){
+		// dont want to render, thats why using state but not setState
+		if(!this.state.waiting){
+			this.state.waiting = []
+		}
+
+		this.state.waiting.push(state)
+	}
+
+	_waitingToState_App(){
+		if(!this.state.loading){
+			var states = {}
+
+			l('_waitingToState_App', this.state.waiting)
+
+			if(this.state.waiting){
+				this.state.waiting.forEach( stateObj => {
+					states = Object.assign(states, stateObj)
+				})
+			}
+
+			delete this.state.waiting 
+
+			this.setState(states)
+		}
 	}
 
 	_historyObjGrabber(elem){
@@ -84,13 +122,12 @@ class App extends React.Component{
 		return
 	}
 
-
 	render(){
 
 		l(this.state)
 
 		var AppBody
-		if(this.state.isLogged){
+		if(this.state.Auth_isLogged){
 			AppBody = (	
 				<div>
 					<LogoutBtn />
@@ -121,8 +158,9 @@ class App extends React.Component{
 
 		return (
 			<div> 
-				{AppBody}
 				{GrabberLink}
+				{AppBody}
+				<Loading showed={this.state.App_isLoading || this.state.Auth_isLoading}/>
 			</div>
 		)
 	}

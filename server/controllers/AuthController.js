@@ -50,10 +50,17 @@ UserController.registerCheckUsernameAvailable = (req, res) => {
 UserController.doLogin = (req, res, next) => {
 
 	//UserController.showUsers()
+	//l(req.body)
+
+	var username = req.body.username
+	User.findOne({username: username}, (err, user) => {
+		if(user) l('user exist', user)
+		else res.status(401).send('no user with username : ' + username)
+	})
 
 	passport.authenticate('local')(req, res, function(err, user){
 		if(err){
-			res.send(err)
+			//res.status(401).send('password is wrong')
 		} else {
 			res.send('login success')
 		}

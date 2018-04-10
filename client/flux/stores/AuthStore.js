@@ -11,15 +11,7 @@ const events = {
 const state = {
 	isLoading : false,
 	isLogged : false,
-	/*error : false,
-	message : false,*/
 	user: undefined,
-	/*isLoading: false,
-	isLogged: false,
-	_historyObj: undefined,
-	error : false,
-	message : undefined,
-	user: undefined,*/
 }
 
 
@@ -29,7 +21,7 @@ Dispatcher.register( function(action){
 		case Constants.AUTH_CHECK_AUTH_STARTED : {
 			//l(' CHECK_AUTH_STARTED ')
 			state.isLoading = true
-			AppStore.emitChange(' CHECK_AUTH_STARTED ')
+			AuthStore.emitChange(' CHECK_AUTH_STARTED ')
 			break;
 		}
 
@@ -42,7 +34,7 @@ Dispatcher.register( function(action){
 
 			state.isLoading = false
 
-			AppStore.emitChange('CHECK_AUTH_SUCCESS')
+			AuthStore.emitChange('CHECK_AUTH_SUCCESS')
 			break;
 		}
 
@@ -53,14 +45,14 @@ Dispatcher.register( function(action){
 
 			state.isLoading = false
 
-			AppStore.emitChange(' CHECK_AUTH_FAIL ')
+			AuthStore.emitChange(' CHECK_AUTH_FAIL ')
 			break;
 		}
 
 		case Constants.AUTH_LOGIN_TRY : {
 			//l(' LOGIN_TRY ')
 			state.isLoading = true
-			AppStore.emitChange(' LOGIN_TRY ')
+			AuthStore.emitChange(' LOGIN_TRY ')
 			break;
 		}
 
@@ -68,14 +60,14 @@ Dispatcher.register( function(action){
 			//l(' LOGIN_SUCCESS ')
 			// TODO : smooth reload page through PageChange
 
-			AppStore.emitPagePreChange()
+			AuthStore.emitPagePreChange()
 				.then(() => {
 					state.isLoading = false
 					state.isLogged = true
 					state.error = false
 					state.message = undefined
 				
-					AppStore.emitChange(' LOGIN_SUCCESS ')
+					AuthStore.emitChange(' LOGIN_SUCCESS ')
 				})
 
 			break;
@@ -87,7 +79,7 @@ Dispatcher.register( function(action){
 			state.error = true
 			state.message = 'wrong pair login / password'
 
-			AppStore.emitChange(' LOGIN_FAIL ')
+			AuthStore.emitChange(' LOGIN_FAIL ')
 			break;
 		}
 
@@ -105,14 +97,14 @@ Dispatcher.register( function(action){
 
 		case Constants.AUTH_LOADING : {
 			//state.isLoading = true
-			//AppStore.emitChange(' LOADING ')
+			//AuthStore.emitChange(' LOADING ')
 		}
 
 		case Constants.AUTH_GET_USER_INFO_SUCCESS : { 
 			/*state.isLoading = false
 			state.user = action.user
 			l('user : ', state.user)
-			AppStore.emitChange()*/
+			AuthStore.emitChange()*/
 			break;
 		}
 
@@ -120,7 +112,7 @@ Dispatcher.register( function(action){
 			/*state.isLoading = false
 			state.user = 'no user info'
 			l('err : ', action.err)
-			AppStore.emitChange()*/
+			AuthStore.emitChange()*/
 			break;
 		}
 	}

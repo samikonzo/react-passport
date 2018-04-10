@@ -24,14 +24,14 @@ class App extends React.Component{
 	
 
 		this._historyObjGrabber = this._historyObjGrabber.bind(this)
-		/*this._onChangeEventApp = this._onChangeEventApp.bind(this)
+		/*this._onChangeEvent_App = this._onChangeEvent_App.bind(this)
 		this._onPageChangePreaparingApp = this._onPageChangePreaparingApp.bind(this)
 		this._onPageChangeApp = this._onPageChangeApp.bind(this)
 		*/
 	}
 
 	componentWillMount(){
-		/*AppStore.addChangeListener(this._onChangeEventApp)
+		/*AppStore.addChangeListener(this._onChangeEvent_App)
 		AppStore.addPageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)
 		AppActions.checkAuth()*/
 
@@ -43,7 +43,7 @@ class App extends React.Component{
 	}
 
 	componentWillUnmount(){
-		/*AppStore.removeChangeListener(this._onChangeEventApp)
+		/*AppStore.removeChangeListener(this._onChangeEvent_App)
 		AppStore.removePageChangeListener(this._onPageChangePreaparingApp, this._onPageChangeApp)*/
 	}
 
@@ -51,9 +51,9 @@ class App extends React.Component{
 		//l('nextProps')
 	}
 
-	_onChangeEventApp(){
-		//l('_onChangeEventApp')
-		//l('_onChangeEventApp : ', AppStore.getState())
+	_onChangeEvent_App(){
+		//l('_onChangeEvent_App')
+		//l('_onChangeEvent_App : ', AppStore.getState())
 		/*this.setState(AppStore.getState(), () => {
 			if(this.state.isLogged && 
 			 	!this.state.isLoading &&

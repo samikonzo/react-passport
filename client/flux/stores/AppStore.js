@@ -13,11 +13,14 @@ const events = {
 
 const state = {
 	isLoading: false,
+	_historyObj : undefined,
+	
+	/*isLoading: false,
 	isLogged: false,
 	_historyObj: undefined,
 	error : false,
 	message : undefined,
-	user: undefined,
+	user: undefined,*/
 }
 
 const AppStore = Object.assign({}, EventEmitter.prototype, {
@@ -135,12 +138,12 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 Dispatcher.register( function(action){
 	switch(action.type){
 
-		case Constants.SET_HISTORY_OBJECT : {
+		case Constants.PAGE_SET_HISTORY_OBJECT : {
 			AppStore.setHistoryObject(action.data)
 			break;
 		}
 
-		case Constants.REDIRECT_TO : {
+		case Constants.PAGE_REDIRECT_TO : {
 			//l(' REDIRECT_TO ')
 			AppStore.emitPagePreChange()
 				.then(() => {
@@ -150,7 +153,7 @@ Dispatcher.register( function(action){
 			break;
 		}
 
-		case Constants.LOADING : {
+		case Constants.PAGE_LOADING : {
 			//state.isLoading = true
 			//AppStore.emitChange(' LOADING ')
 		}

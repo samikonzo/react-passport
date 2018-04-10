@@ -19,7 +19,7 @@ const dbApi = {
 					},
 					err => {
 						l('error connect to database')
-						setTimeout(db.connectToDatabase, 1000)
+						setTimeout(dbApi.connectToDatabase, 1000)
 					}
 				)
 			

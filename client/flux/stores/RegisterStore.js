@@ -8,6 +8,7 @@ const events = {
 
 var initState = {
 	usernameLoading : false,
+	username : undefined,
 	usernameAvailable : undefined,
 	
 	passwordLoading : false,
@@ -58,8 +59,22 @@ Dispatcher.register((action) => {
 			break;
 		}
 
+		case Constants.REGISTER_SET_USERNAME : {
+			state.username = action.username
+			break;
+		}
+
 		case Constants.REGISTER_CHECK_USERNAME_FAIL : {
-			var err = action.err
+			var err = action.error
+			var checkedUsername = action.username
+
+			if(checkedUsername != state.username){
+				l('REGISTER_CHECK_USERNAME_FAIL')
+				l(checkedUsername, '!=', state.username)
+
+				return	
+			} 
+
 			state.usernameLoading = false
 			state.errors.usernameError.error = true
 			state.errors.usernameError.message = err
@@ -72,16 +87,19 @@ Dispatcher.register((action) => {
 		case Constants.REGISTER_CHECK_USERNAME_LOADING : {
 			state.usernameLoading = true
 			state.errors.usernameError.error = false
-			state.errors.usernameError.message = undefined
+			//state.errors.usernameError.message = undefined
 			state.usernameAvailable = undefined
 			RegisterStore.emitChange()
 			break;
 		}
 
 		case Constants.REGISTER_CHECK_USERNAME_SUCCESS : {
+			var checkedUsername = action.username
+			if(checkedUsername != state.username) return
+
 			state.usernameLoading = false
 			state.errors.usernameError.error = false
-			state.errors.usernameError.message = undefined
+			//state.errors.usernameError.message = undefined
 			state.usernameAvailable = true
 
 			RegisterStore.emitChange()
@@ -89,7 +107,7 @@ Dispatcher.register((action) => {
 		}
 
 		case Constants.REGISTER_CHECK_PASSWORD_FAIL : {
-			var err = action.err
+			var err = action.error
 
 			state.passwordAvailable = false
 			state.errors.passwordError.error = true
@@ -108,8 +126,8 @@ Dispatcher.register((action) => {
 			break;
 		}
 
-		case Constants.REGISTER_CLEAR_CHECK_FORM_STATE : {
-			l('REGISTER_CLEAR_CHECK_FORM_STATE')
+		case Constants.REGISTER_CLEAR_FORM_STATE : {
+			l('REGISTER_CLEAR_FORM_STATE')
 			state = Object.assign({}, initState) 
 			RegisterStore.emitChange()
 			break;

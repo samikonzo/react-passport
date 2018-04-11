@@ -18,6 +18,7 @@ class Register extends React.Component{
 		this._onSubmit = this._onSubmit.bind(this)
 		this._delayedCheckUsernameAvailable = this._delayedCheckUsernameAvailable.bind(this)
 		this._checkUsernameAvailable = this._checkUsernameAvailable.bind(this)
+		this._delayedCheckPasswordAvailable = this._delayedCheckPasswordAvailable.bind(this)
 		this._checkPasswordAvailable = this._checkPasswordAvailable.bind(this)
 		this._isFormSucces = this._isFormSucces.bind(this)
 		this._hideContent_Register = this._hideContent_Register.bind(this)
@@ -94,21 +95,37 @@ class Register extends React.Component{
 		var username = e.target.value
 
 		if(username.trim) username = username.trim()
+
+		AppActions.registerSetUsername(username)	
 		
 		// space check
 		if(username.split(' ').length > 1){
-			AppActions.registerCheckUsernameFail('spaces are not allowed')
+			AppActions.registerCheckUsernameFail('spaces are not allowed', username)
 			return
 		}
 
 		// length check
 		if(username.length < 5 || username.length > 15){
-			AppActions.registerCheckUsernameFail('5 < username < 15 : ' + username.length)
+			AppActions.registerCheckUsernameFail('5 < username < 15 : ' + username.length, username)
 			return
 		}
 
 		// everything ok -> send to server for check availability
 		AppActions.registerCheckUsernameAvailable(username)
+	}
+
+	_delayedCheckPasswordAvailable(e){
+		e.persist()
+		
+		if(this._delayedCheckPasswordAvailable.timer){
+			clearTimeout(this._delayedCheckPasswordAvailable.timer)
+		}
+
+		this._delayedCheckPasswordAvailable.timer = setTimeout(
+			() => {
+				this._checkPasswordAvailable(e)
+			}, 500
+		)
 	}
 
 	_checkPasswordAvailable(e){
@@ -123,8 +140,11 @@ class Register extends React.Component{
 	}
 
 	_isFormSucces(){
-		// TODO : some tests		
-		if(!this.state.usernameAvailable || !this.state.passwordAvailable) return false
+			
+		if(!this.state.usernameAvailable || !this.state.passwordAvailable){ 
+			l('this.state.usernameAvailable : ', this.state.usernameAvailable, ' | this.state.passwordAvailable : ', this.state.passwordAvailable)
+			return false
+		}
 
 		return true
 	}
@@ -132,6 +152,7 @@ class Register extends React.Component{
 	render(){
 
 		//l(this.state)
+		//l(this.state.errors)
 
 		// wrapper
 		var wrapperClassName = 'Register_wrapper '
@@ -150,8 +171,8 @@ class Register extends React.Component{
 		var usernameErrorMessage = ''
 		if(this.state.errors.usernameError.error){
 			usernameErrorClassName += 'Register_username__error--showed'
-			usernameErrorMessage = this.state.errors.usernameError.message
 		}
+		usernameErrorMessage = this.state.errors.usernameError.message
 
 
 		// password
@@ -165,8 +186,8 @@ class Register extends React.Component{
 		var passwordErrorMessage = ''
 		if(this.state.errors.passwordError.error){
 			passwordErrorClassName += 'Register_password__error--showed'
-			passwordErrorMessage = this.state.errors.passwordError.message
 		}
+		passwordErrorMessage = this.state.errors.passwordError.message
 
 
 		// loading 
@@ -174,7 +195,10 @@ class Register extends React.Component{
 		if(this.state.usernameLoading) Register_loadingClassName += 'Register_loading--showed'
 		
 
+
 		return(
+
+
 			<div className={wrapperClassName}>
 				<h1>Register</h1>
 				<form action="/register" method="post" onSubmit={this._onSubmit}>
@@ -190,8 +214,8 @@ class Register extends React.Component{
 							className={usernameClassName}/>
 
 						
-						<div className={usernameErrorClassName}>{usernameErrorMessage}</div>
 					</label>
+					<div className={usernameErrorClassName}>{usernameErrorMessage}</div>
 
 					<label className="Register_password__label">
 						password : 
@@ -200,13 +224,13 @@ class Register extends React.Component{
 							name="password" 
 							autoComplete="new-password"
 							required
-							onChange={this._checkPasswordAvailable}
+							onChange={this._delayedCheckPasswordAvailable}
 							className={passwordClassName} />
 
 						{/*<div className={passwordLoadingClassName}></div>*/}
-						<div className={passwordErrorClassName}>{passwordErrorMessage}</div>	
 					</label>
-
+					
+					<div className={passwordErrorClassName}>{passwordErrorMessage}</div>	
 					<input type="submit" value="register" className="Register-submitBtn" />
 
 

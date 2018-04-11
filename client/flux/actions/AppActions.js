@@ -9,9 +9,6 @@ const AppActions ={
 	*	Register
 	*/
 	register(formdata){
-		l('register')
-		//l(' ACTION : register')
-
 		Dispatcher.dispatch({
 			type: Constants.REGISTRATION_WAIT
 		})
@@ -40,29 +37,25 @@ const AppActions ={
 					
 				},
 
-				err => {
+				error => {
 					Dispatcher.dispatch({
 						type: Constants.REGISTRATION_FAIL,
-						error: err,
-						err: err,
-						data: err,
+						error: error,
+						error: error,
+						data: error,
 					})
 				}
 			)
 	},
 
-	registerCheckUsernameFail(err){
-		l('registerCheckUsernameFail')
+	registerSetUsername(username){
 		Dispatcher.dispatch({
-			type: Constants.REGISTER_CHECK_USERNAME_FAIL,
-			error: err,
-			err: err,
-			data: err
+			type: Constants.REGISTER_SET_USERNAME,
+			username: username,
 		})
 	},
 
 	registerCheckUsernameAvailable(username){
-		l('registerCheckUsernameAvailable')
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CHECK_USERNAME_LOADING
 		})
@@ -71,41 +64,44 @@ const AppActions ={
 			.then(
 				ok => {
 					Dispatcher.dispatch({
-						type: Constants.REGISTER_CHECK_USERNAME_SUCCESS
+						type: Constants.REGISTER_CHECK_USERNAME_SUCCESS,
+						username: username,
 					})
 				},
-				err => {
-					err = err.response.data 
+				error => {
+					error = error.response.data 
 
 					Dispatcher.dispatch({
 						type: Constants.REGISTER_CHECK_USERNAME_FAIL,
-						error: err,
-						err: err,
-						data: err,
+						error: error,
+						username: username,
 					})
 				},
 			) 
 	},
 
-	registerCheckPasswordFail(err){
-		l('registerCheckPasswordFail')
+	registerCheckUsernameFail(error, username){
+		Dispatcher.dispatch({
+			type: Constants.REGISTER_CHECK_USERNAME_FAIL,
+			error: error,
+			username: username,
+		})
+	},
+
+	registerCheckPasswordFail(error){
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CHECK_PASSWORD_FAIL,
-			error: err,
-			err: err,
-			data: err
+			error: error,
 		})
 	},
 
 	registerCheckPasswordSuccess(){
-		l('registerCheckPasswordSuccess')
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CHECK_PASSWORD_SUCCESS,
 		})
 	},
 
 	registerClearFormState(){
-		l('registerClearFormState')
 		Dispatcher.dispatch({
 			type: Constants.REGISTER_CLEAR_FORM_STATE,
 		})
@@ -116,9 +112,49 @@ const AppActions ={
 	/**
 	*	Auth 
 	*/
+	authCheckAuth(){
+		Dispatcher.dispatch({
+			type: Constants.AUTH_CHECK_AUTH_STARTED
+		})
+
+		api.checkAuth().then(
+			result => {
+				if(result.data){
+					var url = '/'
+					Dispatcher.dispatch({
+						type: Constants.PAGE_REDIRECT_TO,
+						data: url,
+						url : url,
+						href : url,
+					})
+				}
+
+				/**/
+
+				Dispatcher.dispatch({
+					type: Constants.AUTH_CHECK_AUTH_SUCCESS,
+					data: result.data,
+				})
+			},
+			error => {
+				l(error)
+				/*var url = '/'
+					Dispatcher.dispatch({
+						type: Constants.PAGE_REDIRECT_TO,
+						data: url,
+						url : url,
+						href : url,
+					})*/
+
+				Dispatcher.dispatch({
+					type: Constants.AUTH_CHECK_AUTH_FAIL,
+					error: error,
+				})
+			}
+		)
+	},
+
 	authLogin(formdata){
-		l('authLogin')
-		l(' ACTION : login')
 		Dispatcher.dispatch({
 			type: Constants.AUTH_LOGIN_TRY
 		})
@@ -141,19 +177,17 @@ const AppActions ={
 
 				
 				},
-				err => {
+				error => {
 					Dispatcher.dispatch({
 						type: Constants.AUTH_LOGIN_FAIL,
-						error: err,
-						message: err.response.data,
+						error: error,
+						message: error.response.data,
 					})
 				}
 			)
 	},
 
 	authLogout(){
-		l('authLogout')
-		//l(' ACTION : logout')
 		api.logout()
 			.then(
 				() => {
@@ -175,68 +209,31 @@ const AppActions ={
 			)
 	},
 
-	authCheckAuth(){
-		l('authCheckAuth')
-		//l(' ACTION : checkAuth')
-		Dispatcher.dispatch({
-			type: Constants.AUTH_CHECK_AUTH_STARTED
-		})
-
-		api.checkAuth().then(
-			result => {
-				Dispatcher.dispatch({
-					type: Constants.AUTH_CHECK_AUTH_SUCCESS,
-					data: result.data,
-				})
-			},
-			err => {
-				Dispatcher.dispatch({
-					type: Constants.AUTH_CHECK_AUTH_FAIL,
-					error: err,
-					err: err,
-					data: err
-				})
-			}
-		)
-	},
-
 	authGetUserInfo(){
-		l('authGetUserInfo')
-		//l('ACTION : getUserInfo')
 		l(Dispatcher.isDispatching())
 
 		Dispatcher.dispatch({
-			type: Constants.AUTH_LOADING,
+			type: Constants.AUTH_GET_USER_INFO_STARTED,
+			time: performance.now(),
 		})
 
-		setTimeout(() => {
-			/*l(Dispatcher.isDispatching())
-			Dispatcher.dispatch({
-				type: Constants.LOADING,
-			})
+		api.getUserInfo()
+			.then(
+				result => {
+					//l(result)
 
-			api.getUserInfo()
-				.then(
-					user => {
-						Dispatcher.dispatch({
-							type: Constants.USER_GET_USER_INFO_SUCCESS,
-							data: user.data,
-							user: user.data,
-						})
-					},
-					err => {
-						Dispatcher.dispatch({
-							type: Constants.USER_GET_USER_INFO_FAIL,
-							result: err,
-							err: err,
-							error: err,
-						})
-					}
-				)*/
-
-
-			
-		}, 0)
+					Dispatcher.dispatch({
+						type: Constants.AUTH_GET_USER_INFO_SUCCESS,
+						user: result.data.user,
+					})
+				},
+				error => {
+					Dispatcher.dispatch({
+						type: Constants.AUTH_GET_USER_INFO_FAIL,
+						error: error,
+					})
+				}
+			)
 	},
 
 
@@ -244,8 +241,6 @@ const AppActions ={
 	*	Page changing
 	*/	
 	pageSetHistoryObj(obj){
-		l('pageSetHistoryObj')
-		//l(' ACTION : setHistoryObj')
 		Dispatcher.dispatch({
 			type: Constants.PAGE_SET_HISTORY_OBJECT,
 			data: obj,
@@ -264,16 +259,12 @@ const AppActions ={
 	},
 
 	pagePopstate(e){
-		l('pagePopstate')
-		//l('ACTION : popstate')
 		/*Dispatcher.dispatch({
 			type : Constants.POP_STATE
 		})*/
 	},
 
 	pageRedirectTo(url){
-		l('pageRedirectTo')
-		//l('ACTION : redirectTo')
 		Dispatcher.dispatch({
 			type: Constants.PAGE_REDIRECT_TO,
 			data: url,
@@ -324,8 +315,9 @@ function dispatchingCheck(fName, args){
 						// var delayedF = Dispatcher._queue.pop()
 						var delayedF = Dispatcher._queue.splice(0,1)[0]
 						
-						AppActions[delayedF.fName].apply(null, delayedF.arguments)
+						//l('AppActions : ', fName)
 
+						AppActions[delayedF.fName].apply(null, delayedF.arguments)
 						if(!Dispatcher._queue.length){
 							delete Dispatcher._queue
 							delete Dispatcher._queueTimer	

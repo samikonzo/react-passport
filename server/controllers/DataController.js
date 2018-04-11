@@ -13,11 +13,14 @@ DataController.isUserAuthed = (req,res,next) => {
 DataController.getUserInfo = (req, res, next) => {
 	l('DataCotroller')
 
-	if(req.user){
-		res.send({user : req.user})
-	} else {
-		res.status(401).send()		
-	}
+	setTimeout(() => {
+		if(req.user){
+			res.send({user : req.user})
+		} else {
+			res.status(401).send()		
+		}
+	}, 3000)
+
 
 }
 

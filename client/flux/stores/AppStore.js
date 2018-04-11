@@ -112,7 +112,7 @@ const AppStore = Object.assign({}, EventEmitter.prototype, {
 	},
 
 	redirectTo(url){
-		//l(state._historyObj)
+		l('AppStore redirectTo : ', url)
 		state._historyObj.push(url)
 	},
 

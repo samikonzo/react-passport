@@ -7,71 +7,72 @@ const events = {
 	'CHANGE_STATE' : 'CHANGE_STATE',
 }
 
-
-const state = {
+const initState = {
 	Auth_isLoading 	: false,
 	Auth_isLogged 	: false,
 	Auth_error 		: false,
 	Auth_message 	: undefined,
 	Auth_user 		: undefined,
+	Auth_userError 	: false,
+	Auth_userIsLoading : false,	
+	Auth_firstCheck : false,
 }
+
+var state = Object.assign({}, initState)
 
 
 Dispatcher.register( function(action){
 	switch(action.type){
 
 		case Constants.AUTH_CHECK_AUTH_STARTED : {
-			//l(' CHECK_AUTH_STARTED ')
-			l('Auth_isLoading')
+			//l('AUTH_CHECK_AUTH_STARTED')
 			state.Auth_isLoading = true
 			AuthStore.emitChange(' CHECK_AUTH_STARTED ')
 			break;
 		}
 
 		case Constants.AUTH_CHECK_AUTH_SUCCESS : {
-			//l(' CHECK_AUTH_SUCCESS ')
+			//l('AUTH_CHECK_AUTH_SUCCESS')
 			var result = action.data
 
 			if(result) state.Auth_isLogged = true
 			else state.Auth_isLogged = false
 
-			l('Auth_isLoading')
 			state.Auth_isLoading = false
+			state.Auth_firstCheck = true
 
 			AuthStore.emitChange('CHECK_AUTH_SUCCESS')
 			break;
 		}
 
 		case Constants.AUTH_CHECK_AUTH_FAIL : {
-			//l(' CHECK_AUTH_FAIL ')
+			//l('AUTH_CHECK_AUTH_FAIL')
 			var err = action.error
 			l(err)
 
-			l('Auth_isLoading')
 			state.Auth_isLoading = false
+			state.Auth_firstCheck = true
 
 			AuthStore.emitChange(' CHECK_AUTH_FAIL ')
 			break;
 		}
 
 		case Constants.AUTH_LOGIN_TRY : {
-			l(' LOGIN_TRY ')
-			l('Auth_isLoading')
-			l(action)
+			//l('AUTH_LOGIN_TRY')
+			//l(action)
 			state.Auth_isLoading = true
 			AuthStore.emitChange(' LOGIN_TRY ')
 			break;
 		}
 
 		case Constants.AUTH_LOGIN_SUCCESS : {
-			l('Auth_isLoading')
+			//l('AUTH_LOGIN_SUCCESS')
 			state.Auth_isLoading = false	
 			state.Auth_isLogged = true
 			state.Auth_error = false
 			state.Auth_message = action.message
 
 			AuthStore.emitChange(' LOGIN_SUCCESS ')
-
 			break;
 		}
 
@@ -86,8 +87,7 @@ Dispatcher.register( function(action){
 				input = 'password'
 			}
 
-			//l(' LOGIN_FAIL ')
-			l('Auth_isLoading')
+			//l('AUTH_LOGIN_FAIL')
 			state.Auth_isLoading = false
 			state.Auth_isLogged = false
 			state.Auth_error = {
@@ -103,8 +103,7 @@ Dispatcher.register( function(action){
 		}
 
 		case Constants.AUTH_AFTER_REGISTRATION_LOGIN : {
-			//l(' AFTER_REGISTRATION_LOGIN ')
-			l('Auth_isLoading')
+			//l('AUTH_AFTER_REGISTRATION_LOGIN')
 			state.Auth_isLoading = false
 			state.Auth_isLogged = true;
 			state.Auth_error = false
@@ -113,35 +112,44 @@ Dispatcher.register( function(action){
 		}
 
 		case Constants.AUTH_LOGOUT : {
-			l('Auth_isLoading')
-			state.Auth_isLoading = false
+			//l('AUTH_LOGOUT')
+			state = Object.assign({}, initState)
+			/*state.Auth_isLoading = false
 			state.Auth_isLogged = false
 			state.Auth_error = false
 			state.Auth_message = undefined
+			state.Auth_user = undefined*/
 			AuthStore.emitChange(' LOGOUT ')
 			break;
 		}
 
+		case Constants.AUTH_GET_USER_INFO_STARTED : {
+			//l('AUTH_GET_USER_INFO_STARTED', action)
+			state.Auth_userIsLoading = true
+			AuthStore.emitChange(' AUTH_GET_USER_INFO_STARTED ')
+			break;
+		}
+
 		case Constants.AUTH_GET_USER_INFO_SUCCESS : { 
-			l('Auth_isLoading')
-			/*state.Auth_isLoading = false
-			state.Auth_user = action.Auth_user
-			l('Auth_user : ', state.Auth_user)
-			AuthStore.emitChange()*/
+			//l('AUTH_GET_USER_INFO_SUCCESS')
+			state.Auth_userIsLoading = false
+			state.Auth_user = action.user
+
+			AuthStore.emitChange(' AUTH_GET_USER_INFO_SUCCESS ')
 			break;
 		}
 
 		case Constants.AUTH_GET_USER_INFO_FAIL : { 
-			l('Auth_isLoading')
-			/*state.Auth_isLoading = false
-			state.Auth_user = 'no Auth_user info'
-			l('err : ', action.err)
-			AuthStore.emitChange()*/
+			//l('AUTH_GET_USER_INFO_FAIL')
+			state.Auth_userIsLoading = false
+			state.Auth_user = undefined
+			state.Auth_userError = action.error
+			AuthStore.emitChange(' AUTH_GET_USER_INFO_FAIL ')
 			break;
 		}
 
 		default : {
-			l(action)
+			//l(action)
 		}
 	}
 })	
@@ -164,6 +172,7 @@ const AuthStore = Object.assign({}, EventEmitter.prototype, {
 	},
 
 	getState(){
+		//l(state)
 		return state
 	},
 
@@ -173,6 +182,7 @@ const AuthStore = Object.assign({}, EventEmitter.prototype, {
 	*/
 
 	getUserInfo(){
+		//l(state.Auth_user)
 		return state.Auth_user
 	}
 

@@ -21,12 +21,12 @@ class PageLoading extends React.Component{
 			var i = 0
 			var interval = setInterval( () => {
 				l('time : ', i++)
-			}, 1000)
+			}, 100)
 
 			setTimeout(() => {
 				resolve()
 				clearInterval(interval)
-			}, 2000)
+			}, 500)
 		})
 	}
 

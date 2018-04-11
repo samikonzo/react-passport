@@ -23,7 +23,7 @@ import Loading from '../components/etc/Loading.jsx'
 *	then other stores-stateSender waiting in the this.state.waiting
 *	and only after App_isLoading == false new states used
 */
-
+//function l(){}
 
 
 class App extends React.Component{
@@ -48,10 +48,8 @@ class App extends React.Component{
 		AppStore.addChangeListener(this._onChangeEvent_App)
 		AppStore.addPageChangeListener(this._onPageChangePrepare_App, this._onPageChange_App)
 		AuthStore.addChangeListener(this._onAuthChange_App)
-
 		
-		//AppActions.authCheckAuth()
-
+		AppActions.authCheckAuth()
 	}
 
 	componentWillUnmount(){
@@ -77,6 +75,14 @@ class App extends React.Component{
 	_onAuthChange_App(){
 		var AuthState = AuthStore.getState()
 
+		var needToGetuserInfo = (AuthState.Auth_isLogged && 
+								!AuthState.Auth_user && 
+								!AuthState.Auth_userIsLoading)
+
+		if(needToGetuserInfo){
+			AppActions.authGetUserInfo()
+		}
+
 		if(this.state.App_isLoading){
 			this._waitingAdd_App( AuthState )
 		} else {
@@ -97,7 +103,7 @@ class App extends React.Component{
 		if(!this.state.loading){
 			var states = {}
 
-			l('_waitingToState_App', this.state.waiting)
+			//l('_waitingToState_App', this.state.waiting)
 
 			if(this.state.waiting){
 				this.state.waiting.forEach( stateObj => {
@@ -124,7 +130,7 @@ class App extends React.Component{
 
 	render(){
 
-		l(this.state)
+		//l(this.state)
 
 		var AppBody
 		if(this.state.Auth_isLogged){
@@ -146,6 +152,16 @@ class App extends React.Component{
 				</Switch> 
 			)
 		}
+
+		// try auth_isloading => must broke system
+		// then try new flag, that meaning that first check was make
+		if(this.state.Auth_isLoading && !this.state.Auth_firstCheck){
+			AppBody = (
+				<PageLoading/>
+			)
+		}
+
+
 
 		// Grabber Link needs for grab historyObj from Link
 		var GrabberLink

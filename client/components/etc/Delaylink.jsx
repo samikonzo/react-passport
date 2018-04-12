@@ -26,7 +26,7 @@ class DelayLink extends React.Component{
 		const props = Object.assign({}, this.props)
 
 		return( 
-			<Link {...props} onClick={this.handleClick} />
+			<Link {...props} onClick={this.handleClick} className={this.props._class}/>
 		)
 	}
 }

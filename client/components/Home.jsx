@@ -4,6 +4,11 @@ import AppActions from '../flux/actions/AppActions.js'
 import AppStore from '../flux/stores/AppStore.js'
 import AuthStore from '../flux/stores/AuthStore.js'
 
+// components
+import Home_avatar from './Home_avatar.jsx'
+
+
+
 class Home extends React.Component{
 	constructor(props){
 		super(props)
@@ -29,14 +34,8 @@ class Home extends React.Component{
 
 	_hideConent_Home(){
 		return new Promise(resolve => {
-			/*var i = 0
-			var interval = setInterval( () => {
-				l('time : ', i++)
-			}, 1000)*/
-
 			setTimeout(() => {
 				resolve()
-				//clearInterval(interval)
 			}, 1000)
 		})
 	}
@@ -52,17 +51,6 @@ class Home extends React.Component{
 		this.setState({
 			user : user
 		})
-
-		/*var AuthState = AuthStore.getUserInfo()
-		if(!AuthState || !AuthState.Auth_isLogged){
-			l(AuthState)
-			l(!AuthState.Auth_isLogged)
-			return
-		}
-
-		this.setState({
-			user: AuthState
-		})*/
 	}
 
 
@@ -74,13 +62,32 @@ class Home extends React.Component{
 		var username = this.state.user && this.state.user.username
 
 		return(
-			<div>
-				<h1> Hello, {username} </h1>
-
-				<Delaylink to="/contacts">Contacts</Delaylink>
+			<div className='Home'>
+				{/*<h1> Hello, {username} </h1>*/}
+				{/*<div className='Home_avatar'> </div>*/}
+				<Home_avatar avatar={this.user && this.user.avatar}/>
 			</div>
 		)
 	}
 }
+
+
+
+/*function Home_avatar(props){
+	const avatar = props.avatar
+	var src = ''
+	if(!avatar){
+		return <div className='Home_avatar Home_avatar--empty'> </div>
+	} else {
+		return <div className='Home_avatar'> <img src={avatar}/> </div>
+	}
+}*/
+
+
+
+
+
+
+
 
 export default Home

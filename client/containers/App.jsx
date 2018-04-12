@@ -11,9 +11,9 @@ import Login from '../components/Login.jsx'
 import LogoutBtn from '../components/LogoutBtn.jsx'
 import Register from '../components/Register.jsx'
 import Home from '../components/Home.jsx'
-import PageLoading from '../components/PageLoading.jsx'
+import PageLoading from '../components/PageLoading.jsx' //loading for authcheck
 import Loading from '../components/etc/Loading.jsx'
-
+import Menu from '../components/Menu.jsx'
 
 
 /**
@@ -136,7 +136,8 @@ class App extends React.Component{
 		if(this.state.Auth_isLogged){
 			AppBody = (	
 				<div>
-					<LogoutBtn />
+					<Menu />
+					{/*<LogoutBtn />*/}
 					
 					<Switch> 
 						<Route exact path='/' component={Home} />

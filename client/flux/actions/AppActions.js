@@ -119,7 +119,9 @@ const AppActions ={
 
 		api.checkAuth().then(
 			result => {
-				if(result.data){
+				var authed = result.data
+
+				if(authed){
 					var url = '/'
 					Dispatcher.dispatch({
 						type: Constants.PAGE_REDIRECT_TO,
@@ -133,7 +135,7 @@ const AppActions ={
 
 				Dispatcher.dispatch({
 					type: Constants.AUTH_CHECK_AUTH_SUCCESS,
-					data: result.data,
+					data: authed,
 				})
 			},
 			error => {
@@ -172,7 +174,7 @@ const AppActions ={
 
 					Dispatcher.dispatch({
 						type: Constants.AUTH_LOGIN_SUCCESS,
-						message: result.data
+						data: result.data
 					})
 
 				
@@ -236,6 +238,37 @@ const AppActions ={
 			)
 	},
 
+	/**
+	*	User
+	*/
+	userChangeAvatar(formdata){
+		Dispatcher.dispatch({
+			type: Constants.USER_CHANGE_AVATAR
+		})
+
+		api.userChangeAvatar(formdata)
+			.then(
+				result => {
+
+					l('userChangeAvatar result : ', result)
+
+					Dispatcher.dispatch({
+						type: Constants.USER_CHANGE_AVATAR_SUCCESS,
+						//img : result.data
+					})
+				},
+
+				error => {
+
+					l('userChangeAvatar error : ', error)
+					
+					Dispatcher.dispatch({
+						type: Constants.USER_CHANGE_AVATAR_FAIL,
+						//img : result.data
+					})
+				}
+			)
+	},
 
 	/**
 	*	Page changing

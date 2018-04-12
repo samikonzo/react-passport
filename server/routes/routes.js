@@ -4,6 +4,8 @@ var auth = require('../controllers/AuthController')
 var data = require('../controllers/DataController')
 
 
+
+
 /**
 *	Auth request
 */
@@ -18,7 +20,7 @@ router.get('/authStatus', auth.authStatus)
 *	User
 */
 router.get('/user', data.isUserAuthed ,data.getUserInfo)
-
+router.post('/upload/user/avatar', data.isUserAuthed, data.userChangeAvatar)
 
 /*router.get('/loginStatus', (req, res) => {
 	var status = req.isAuthenticated()

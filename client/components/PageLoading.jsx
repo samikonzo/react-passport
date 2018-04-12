@@ -1,6 +1,6 @@
 import React from 'react'
 import AppStore from '../flux/stores/AppStore.js'
-
+import './styles/PageLoading.less'
 
 class PageLoading extends React.Component{
 	constructor(props){
@@ -18,21 +18,23 @@ class PageLoading extends React.Component{
 
 	_hideConent_PageLoading(){
 		return new Promise(resolve => {
-			var i = 0
-			var interval = setInterval( () => {
-				l('time : ', i++)
-			}, 100)
-
 			setTimeout(() => {
 				resolve()
-				clearInterval(interval)
 			}, 500)
 		})
 	}
 
 	render(){
 		return(
-			<div> PageLoading </div>
+			<div className='PageLoading'>
+				<div className='PageLoading_loader'>L</div>
+				<div className='PageLoading_loader'>O</div>
+				<div className='PageLoading_loader'>A</div>
+				<div className='PageLoading_loader'>D</div>
+				<div className='PageLoading_loader'>I</div>
+				<div className='PageLoading_loader'>N</div>
+				<div className='PageLoading_loader'>G</div>
+			</div>
 		)
 	}
 }

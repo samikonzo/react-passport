@@ -24,6 +24,10 @@ var state = Object.assign({}, initState)
 Dispatcher.register( function(action){
 	switch(action.type){
 
+		/**
+		*	Auth
+		*/
+
 		case Constants.AUTH_CHECK_AUTH_STARTED : {
 			//l('AUTH_CHECK_AUTH_STARTED')
 			state.Auth_isLoading = true
@@ -34,8 +38,10 @@ Dispatcher.register( function(action){
 		case Constants.AUTH_CHECK_AUTH_SUCCESS : {
 			//l('AUTH_CHECK_AUTH_SUCCESS')
 			var result = action.data
-
-			if(result) state.Auth_isLogged = true
+			if(result){
+				state.Auth_isLogged = true
+				state.Auth_user = result
+			}
 			else state.Auth_isLogged = false
 
 			state.Auth_isLoading = false
@@ -47,11 +53,12 @@ Dispatcher.register( function(action){
 
 		case Constants.AUTH_CHECK_AUTH_FAIL : {
 			//l('AUTH_CHECK_AUTH_FAIL')
-			var err = action.error
-			l(err)
+			var error = action.error
+			l(error)
 
 			state.Auth_isLoading = false
 			state.Auth_firstCheck = true
+			l(action)
 
 			AuthStore.emitChange(' CHECK_AUTH_FAIL ')
 			break;
@@ -70,7 +77,8 @@ Dispatcher.register( function(action){
 			state.Auth_isLoading = false	
 			state.Auth_isLogged = true
 			state.Auth_error = false
-			state.Auth_message = action.message
+			state.Auth_user = action.data
+			//state.Auth_message = action.message
 
 			AuthStore.emitChange(' LOGIN_SUCCESS ')
 			break;
@@ -96,7 +104,7 @@ Dispatcher.register( function(action){
 			}
 			state.Auth_message = action.message 
 
-			
+			//l(state)
 
 			AuthStore.emitChange(' LOGIN_FAIL ')
 			break;
@@ -147,6 +155,24 @@ Dispatcher.register( function(action){
 			AuthStore.emitChange(' AUTH_GET_USER_INFO_FAIL ')
 			break;
 		}
+
+		/**
+		*	User 
+		*/
+
+		case Constants.USER_CHANGE_AVATAR : {
+			l('USER_CHANGE_AVATAR')
+			break;
+		}
+		case Constants.USER_CHANGE_AVATAR_SUCCESS : {
+			l('USER_CHANGE_AVATAR_SUCCESS')
+			break;
+		}
+		case Constants.USER_CHANGE_AVATAR_FAIL : {
+			l('USER_CHANGE_AVATAR_FAIL')
+			break;
+		}		
+
 
 		default : {
 			//l(action)

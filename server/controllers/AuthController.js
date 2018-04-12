@@ -3,6 +3,13 @@ const passport = require('passport')
 const User = require('../models/user.js')
 const l = console.log
 
+
+var serverResponseLongTime = false 
+
+
+
+
+
 const UserController = {}
 
 UserController.showUsers = () => {
@@ -17,8 +24,8 @@ UserController.doRegister = (req, res, next) => {
 	//l(req.body)
 	//UserController.showUsers()
 
-	User.find().then( data => {
-		var count = data.length
+	User.find().then( users => {
+		var count = users.length
 
 		User.register(new User({
 			username : req.body.username,
@@ -52,7 +59,7 @@ UserController.registerCheckUsernameAvailable = (req, res) => {
 				res.send('no users with this username')
 			} 
 		} )
-	}, 3000)
+	}, serverResponseLongTime ? 3000 : 0 )
 }
 
 UserController.doLogin = (req, res, next) => {
@@ -70,11 +77,12 @@ UserController.doLogin = (req, res, next) => {
 			if(err){
 				//res.status(401).send('password is wrong')
 			} else {
-				res.send('login success')
+				l(req.user)
+				res.send(req.user)
 			}
 		})
 		
-	}, 3000)
+	}, serverResponseLongTime ? 3000 : 0 )
 }
 
 UserController.logout = (req, res, next) => {
@@ -92,9 +100,14 @@ UserController.authStatus = (req, res, next) => {
 
 	//UserController.showUsers()
 	setTimeout(() => {
-		l('authStatus : ', req.isAuthenticated())
-		res.send(req.isAuthenticated())
-	}, 4000)
+		//l('authStatus : ', req.isAuthenticated())
+		var authStatus = req.isAuthenticated()
+		if(authStatus){
+			res.send(req.user)
+		} else {
+			res.send(authStatus)
+		}
+	}, serverResponseLongTime ? 4000 : 0 )
 }
 
 

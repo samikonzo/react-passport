@@ -49,44 +49,20 @@ export default {
 
 	userChangeAvatar(formdata){
 		return new Promise( (resolve, reject) => {
-
-			/*var formdata = new FormData()
-			formdata.append('file', file)
-			formdata.append('name', 'avatar')*/
-
 			var xhr = new XMLHttpRequest()
 			xhr.open('POST', '/upload/user/avatar')
 			xhr.send(formdata)
 
 			xhr.onerror = (e) => {
 				l('ERROR : ', e.target.status)
-				//reject(e.target.status)
+				reject(e.target.status)
 			}
 
-			xhr.onload = (e) => {
+			xhr.onload = function(e){
 				l(' LOAD ', e.target.status)
+				l(this)
+				resolve(this.response)
 			}
-
-			/*var xhr = new XMLHttpRequest()
-
-			xhr.upload.onprogress = function(event) {
-   				l(event.loaded + ' / ' + event.total);
-  			}
-			xhr.open('POST', '/upload/user/avatar', true)
-
-  			var boundary=Math.random().toString().substr(2); // boundary needed for multipart/form-data post
-			xhr.setRequestHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
-			xhr.send(formdata)
-
-			xhr.onerror = (e) => {
-				l('ERROR : ', e.target.status)
-				//reject(e.target.status)
-			}
-
-			xhr.onload = (e) => {
-				l(' LOAD ', e.target.status)
-			}*/
-
 		})
 	},
 }

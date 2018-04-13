@@ -39,9 +39,10 @@ class App extends React.Component{
 		this._onPageChangePrepare_App = this._onPageChangePrepare_App.bind(this)
 		this._onPageChange_App = this._onPageChange_App.bind(this)
 		this._onAuthChange_App = this._onAuthChange_App.bind(this)
-		this._waitingAdd_App = this._waitingAdd_App.bind(this)
-		this._waitingToState_App = this._waitingToState_App.bind(this)
+		this._waitingSetState_App = this._waitingSetState_App.bind(this)
+		this._fromWaitingToState_App = this._fromWaitingToState_App.bind(this)
 		this._onChangeEvent_App = this._onChangeEvent_App.bind(this)
+		this._checkAuthEveryTime = this._checkAuthEveryTime.bind(this)
 	}
 
 	componentWillMount(){
@@ -63,17 +64,18 @@ class App extends React.Component{
 	}
 
 	_onChangeEvent_App(){
-		this.setState(AppStore.getState(),this._waitingToState_App)
+		// set state, then check waitingStates
+		this.setState(AppStore.getState(), this._fromWaitingToState_App)
 	}
 
-	_onPageChangePrepare_App(){
-	}
+	_onPageChangePrepare_App(){}
 
-	_onPageChange_App(){
-	}
+	_onPageChange_App(){}
 
 	_onAuthChange_App(){
 		var AuthState = AuthStore.getState()
+
+		if(AuthState.Auth_isLogged) this._checkAuthEveryTime()
 
 		var needToGetuserInfo = (AuthState.Auth_isLogged && 
 								!AuthState.Auth_user && 
@@ -84,13 +86,13 @@ class App extends React.Component{
 		}
 
 		if(this.state.App_isLoading){
-			this._waitingAdd_App( AuthState )
+			this._waitingSetState_App( AuthState )
 		} else {
 			this.setState( AuthState )
 		}
 	}
 
-	_waitingAdd_App(state){
+	_waitingSetState_App(state){
 		// dont want to render, thats why using state but not setState
 		if(!this.state.waiting){
 			this.state.waiting = []
@@ -99,11 +101,11 @@ class App extends React.Component{
 		this.state.waiting.push(state)
 	}
 
-	_waitingToState_App(){
+	_fromWaitingToState_App(){
 		if(!this.state.loading){
 			var states = {}
 
-			//l('_waitingToState_App', this.state.waiting)
+			//l('_fromWaitingToState_App', this.state.waiting)
 
 			if(this.state.waiting){
 				this.state.waiting.forEach( stateObj => {
@@ -116,6 +118,24 @@ class App extends React.Component{
 			this.setState(states)
 		}
 	}
+
+	_checkAuthEveryTime(){
+		const CHECK_TIME =  60 * 1000 // check every minute in ms
+
+		if(this._checkAuthEveryTime.timer) return
+
+		var that = this			
+
+		this._checkAuthEveryTime.timer = setTimeout( function f(){
+			AppActions.authCheckAuthSilent()
+
+			if(that.state.Auth_isLogged){
+				that._checkAuthEveryTime.timer = setTimeout(f, CHECK_TIME)
+			} else {
+				delete that._checkAuthEveryTime.timer
+			}
+		}, CHECK_TIME)
+	}	
 
 	_historyObjGrabber(elem){
 		if(this.state._historyObj) return

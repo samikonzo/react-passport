@@ -100,7 +100,7 @@ UserController.authStatus = (req, res, next) => {
 
 	//UserController.showUsers()
 	setTimeout(() => {
-		//l('authStatus : ', req.isAuthenticated())
+		l('authStatus : ', req.isAuthenticated())
 		var authStatus = req.isAuthenticated()
 		if(authStatus){
 			res.send(req.user)

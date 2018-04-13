@@ -22,13 +22,6 @@ router.get('/authStatus', auth.authStatus)
 router.get('/user', data.isUserAuthed ,data.getUserInfo)
 router.post('/upload/user/avatar', data.isUserAuthed, data.userChangeAvatar)
 
-/*router.get('/loginStatus', (req, res) => {
-	var status = req.isAuthenticated()
-	l('status : ', status)
-	res.send(status)
-})*/
-
-
 
 
 

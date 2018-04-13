@@ -4,6 +4,8 @@ import api from '../api/api.js'
 
 const l = console.log;
 
+// const AppActions = Object.assign(RegisterActions, AuthAction, UserActions)
+
 const AppActions ={
 	/**
 	*	Register
@@ -119,9 +121,9 @@ const AppActions ={
 
 		api.checkAuth().then(
 			result => {
-				var authed = result.data
+				var isAuthed = ( result.data != false )
 
-				if(authed){
+				if(isAuthed){
 					var url = '/'
 					Dispatcher.dispatch({
 						type: Constants.PAGE_REDIRECT_TO,
@@ -131,22 +133,45 @@ const AppActions ={
 					})
 				}
 
-				/**/
+				
+				Dispatcher.dispatch({
+					type: Constants.AUTH_CHECK_AUTH_SUCCESS,
+					data: result.data,
+				})
+
+
+			},
+			error => {
+				l(error)
+
+				Dispatcher.dispatch({
+					type: Constants.AUTH_CHECK_AUTH_FAIL,
+					error: error,
+				})
+			}
+		)
+	},
+
+	authCheckAuthSilent(){
+		api.checkAuth().then(
+			result => {
+
+				var now = new Date()
+				var h = now.getHours()
+				if(h.toString().length < 2) h = '0' + h
+				var m = now.getMinutes()
+				if(m.toString().length < 2) m = '0' + m
+				var s = now.getSeconds()
+				if(s.toString().length < 2) s = '0' + s
+				l(`${h}:${m}:${s}  : ${!!result.data}`)
 
 				Dispatcher.dispatch({
 					type: Constants.AUTH_CHECK_AUTH_SUCCESS,
-					data: authed,
+					data: result.data,
 				})
 			},
 			error => {
 				l(error)
-				/*var url = '/'
-					Dispatcher.dispatch({
-						type: Constants.PAGE_REDIRECT_TO,
-						data: url,
-						url : url,
-						href : url,
-					})*/
 
 				Dispatcher.dispatch({
 					type: Constants.AUTH_CHECK_AUTH_FAIL,
@@ -176,8 +201,6 @@ const AppActions ={
 						type: Constants.AUTH_LOGIN_SUCCESS,
 						data: result.data
 					})
-
-				
 				},
 				error => {
 					Dispatcher.dispatch({
@@ -248,13 +271,15 @@ const AppActions ={
 
 		api.userChangeAvatar(formdata)
 			.then(
-				result => {
+				src => {
 
-					l('userChangeAvatar result : ', result)
+					l(src)
+					//l('userChangeAvatar result : ', result)
+					//l(result.avatar)
 
 					Dispatcher.dispatch({
 						type: Constants.USER_CHANGE_AVATAR_SUCCESS,
-						//img : result.data
+						src: src
 					})
 				},
 

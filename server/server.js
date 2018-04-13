@@ -32,7 +32,7 @@ app.use(session({
 	secret: '512756t87gw',
 	resave: 'false',
 	cookie: {
-		maxAge: 60000
+		maxAge: 10000
 	}
 }))
 app.use(passport.initialize())
@@ -44,6 +44,7 @@ app.use('/', routes)
 //////////////
 
 app.use(express.static(path.join(__dirname, '../', '/public')))
+app.use(express.static(path.join(__dirname, '../', '/uploads')))
 
 
 app.get(/.*/, function root(req, res){

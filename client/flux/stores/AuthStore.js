@@ -15,10 +15,12 @@ const initState = {
 	Auth_user 		: undefined,
 	Auth_userError 	: false,
 	Auth_userIsLoading : false,	
-	Auth_firstCheck : false,
 }
 
-var state = Object.assign({}, initState)
+
+// Auth_firstCheck : false must be used once and not 'falsed' by logout
+var state = Object.assign({}, initState, {Auth_firstCheck : false})
+
 
 
 Dispatcher.register( function(action){
@@ -58,7 +60,7 @@ Dispatcher.register( function(action){
 
 			state.Auth_isLoading = false
 			state.Auth_firstCheck = true
-			l(action)
+			//l(action)
 
 			AuthStore.emitChange(' CHECK_AUTH_FAIL ')
 			break;
@@ -120,13 +122,8 @@ Dispatcher.register( function(action){
 		}
 
 		case Constants.AUTH_LOGOUT : {
-			//l('AUTH_LOGOUT')
+			l('AUTH_LOGOUT')
 			state = Object.assign({}, initState)
-			/*state.Auth_isLoading = false
-			state.Auth_isLogged = false
-			state.Auth_error = false
-			state.Auth_message = undefined
-			state.Auth_user = undefined*/
 			AuthStore.emitChange(' LOGOUT ')
 			break;
 		}
@@ -142,6 +139,7 @@ Dispatcher.register( function(action){
 			//l('AUTH_GET_USER_INFO_SUCCESS')
 			state.Auth_userIsLoading = false
 			state.Auth_user = action.user
+			//l(action.user)
 
 			AuthStore.emitChange(' AUTH_GET_USER_INFO_SUCCESS ')
 			break;
@@ -165,6 +163,8 @@ Dispatcher.register( function(action){
 			break;
 		}
 		case Constants.USER_CHANGE_AVATAR_SUCCESS : {
+			state.Auth_user.avatar = action.src
+			AuthStore.emitChange('USER_CHANGE_AVATAR_SUCCESS ')
 			l('USER_CHANGE_AVATAR_SUCCESS')
 			break;
 		}

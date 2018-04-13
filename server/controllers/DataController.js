@@ -1,4 +1,11 @@
+const l = console.log
+
+// database driver, api, schema
 const mongoose = require('mongoose')
+const User = require('../models/user.js')
+const dbApi = require('../utils/databaseUtils.js')
+
+// file uploading packets and options
 const fs = require('fs')
 const multer = require('multer')
 const Storage = multer.diskStorage({
@@ -17,17 +24,13 @@ const Storage = multer.diskStorage({
 		cb(null, file.fieldname + '_' + Date.now() + '_' + file.originalname )
 	}
 })
-const upload = multer({ storage : Storage }).array('avatar', 3)
+const upload = multer({ storage : Storage }).array('avatar', 1)
 
 
 
 
 
 
-
-
-
-const l = console.log
 
 
 
@@ -52,17 +55,31 @@ DataController.getUserInfo = (req, res, next) => {
 DataController.userChangeAvatar = (req, res, next) => {
 	l('DataController.userChangeAvatar')
 
-	upload(req, res, function(err) {
-		l(req.body)
-		l(req.file)
-		l(req.files)
+	upload(req, res, function(error) {
 
-		if(err){
-			l(err)
-			return res.end('something wrong')
+		if(error){
+			l('UPLOAD error : ',error)
+			return res.send(error)
 		}
 		
-		return res.end('success upload')
+
+		var file = req.files[0]
+		l(file)
+		var path = file.destination + '/' + file.filename
+		var staticPath = path.split('./uploads')[1]
+
+		dbApi.userChangeAvatar(req.user._id, staticPath)
+			.then(
+				result => { 
+					return res.send(staticPath)
+				},
+
+				error => {
+					l('userChangeAvatar error : ', error)
+
+					return res.send(error)
+				}
+			)
 	})
 }
 

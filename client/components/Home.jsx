@@ -41,6 +41,8 @@ class Home extends React.Component{
 	}
 
 	_onAuthChange_Home(){
+		//l('_onAuthChange_Home!')
+
 		var AuthState = AuthStore.getState()
 		if(!AuthState || !AuthState.Auth_isLogged){
 			return
@@ -57,32 +59,15 @@ class Home extends React.Component{
 
 	render(){
 
-		l(this.state)
-
-		var username = this.state.user && this.state.user.username
+		//l(this.state)
 
 		return(
 			<div className='Home'>
-				{/*<h1> Hello, {username} </h1>*/}
-				{/*<div className='Home_avatar'> </div>*/}
-				<Home_avatar avatar={this.user && this.user.avatar}/>
+				<Home_avatar avatar={this.state.user && this.state.user.avatar}/>
 			</div>
 		)
 	}
 }
-
-
-
-/*function Home_avatar(props){
-	const avatar = props.avatar
-	var src = ''
-	if(!avatar){
-		return <div className='Home_avatar Home_avatar--empty'> </div>
-	} else {
-		return <div className='Home_avatar'> <img src={avatar}/> </div>
-	}
-}*/
-
 
 
 

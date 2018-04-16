@@ -1,0 +1,45 @@
+.Home-avatar_wrapper{
+	width: 200px;
+	height: 300px;
+	border: 1px solid;
+	position: relative;
+	overflow: hidden;
+	
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	&:hover .Home-avatar_changeButton{
+
+		bottom: 0px;
+	}
+}
+
+
+.Home-avatar_changeButton{
+	position: absolute;
+	left: 0px;
+	bottom: -30px;
+	width: 100%;
+	height: 30px;
+	line-height: 30px;
+	text-align: center;
+	background: rgba(0, 0, 0, 0.3);
+	color: white;
+	transition: .5s;
+	cursor: pointer;
+
+	&:hover{
+		background: rgba(240, 240, 240, 0.3);
+		color: black;
+	}
+
+	& input{
+		display: none
+	}
+}
+
+
+.Home-avatar_img{
+	max-width: 100%
+}

@@ -7,6 +7,9 @@ import AuthStore from '../flux/stores/AuthStore.js'
 // components
 import Home_avatar from './Home_avatar.jsx'
 
+// styles
+import './styles/Home.less'
+
 
 
 class Home extends React.Component{
@@ -14,9 +17,11 @@ class Home extends React.Component{
 		super(props)
 
 		this.state = {
-			user : AuthStore.getUserInfo()	
+			user : AuthStore.getUserInfo(),
+			show : false,
 		}
 
+		this._showConent_Home = this._showConent_Home.bind(this)
 		this._hideConent_Home = this._hideConent_Home.bind(this)
 		this._onAuthChange_Home = this._onAuthChange_Home.bind(this)
 	}
@@ -26,17 +31,33 @@ class Home extends React.Component{
 		AuthStore.addChangeListener(this._onAuthChange_Home)
 	}
 
+	componentDidMount(){
+		setTimeout(() => {
+			this._showConent_Home()
+		}, 0)
+	}
+
 	
 	componentWillUnmount(){
 		AppStore.removePageChangeListener(this._hideConent_Home)
 		AuthStore.removeChangeListener(this._onAuthChange_Home)
 	}
 
+	_showConent_Home(){
+		this.setState({
+			show: true
+		})
+	}
+
 	_hideConent_Home(){
 		return new Promise(resolve => {
-			setTimeout(() => {
-				resolve()
-			}, 1000)
+			this.setState({
+				show: false
+			}, 
+				setTimeout(() => {
+					resolve()
+				}, 1000) 
+			)
 		})
 	}
 
@@ -59,10 +80,11 @@ class Home extends React.Component{
 
 	render(){
 
-		//l(this.state)
+		var className = 'Home '
+		if(!this.state.show) className += 'Home--hidden'
 
 		return(
-			<div className='Home'>
+			<div className={className}>
 				<Home_avatar avatar={this.state.user && this.state.user.avatar}/>
 			</div>
 		)

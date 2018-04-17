@@ -34,7 +34,7 @@ class Home extends React.Component{
 	componentDidMount(){
 		setTimeout(() => {
 			this._showConent_Home()
-		}, 0)
+		}, 10)
 	}
 
 	
@@ -53,11 +53,11 @@ class Home extends React.Component{
 		return new Promise(resolve => {
 			this.setState({
 				show: false
-			}, 
+			}, () => {
 				setTimeout(() => {
 					resolve()
 				}, 1000) 
-			)
+			})
 		})
 	}
 

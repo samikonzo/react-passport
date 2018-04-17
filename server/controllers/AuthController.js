@@ -53,7 +53,7 @@ UserController.registerCheckUsernameAvailable = (req, res) => {
 		var username = req.body.username
 		User.findOne({username : username}, (err, user) => {
 			if(user){
-				l('user exist, send 400')
+				//l('user exist, send 400')
 				res.status(400).send('User with that username already exist')
 			} else {
 				res.send('no users with this username')
@@ -69,7 +69,9 @@ UserController.doLogin = (req, res, next) => {
 	setTimeout(() => {
 		var username = req.body.username
 		User.findOne({username: username}, (err, user) => {
-			if(user) l('user exist', user)
+			if(user) {
+				//l('user exist', user)
+			}
 			else res.status(401).send('no user with username : ' + username)
 		})
 
@@ -77,7 +79,7 @@ UserController.doLogin = (req, res, next) => {
 			if(err){
 				//res.status(401).send('password is wrong')
 			} else {
-				l(req.user)
+				//l(req.user)
 				res.send(req.user)
 			}
 		})

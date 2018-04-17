@@ -65,4 +65,12 @@ export default {
 			}
 		})
 	},
+
+	userGetAllItems(){
+		return axios.get('/upload/user/all')
+	},
+
+	userSetAvatar(imgSrc){
+		return axios.post('/user/setAvatar', {imgSrc: imgSrc})
+	}
 }

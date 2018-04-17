@@ -51,7 +51,8 @@ module.exports = {
 		rules: [rules.jsx, rules.less]
 	},
 	devServer : {
-		//historyApiFallback	: true,
+		// removed historyApiFallback cuz real server can do this
+		//historyApiFallback	: true, 
 		proxy: {
 			'*' : {
 				target: 'http://localhost:3000'

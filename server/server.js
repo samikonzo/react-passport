@@ -32,7 +32,7 @@ app.use(session({
 	secret: '512756t87gw',
 	resave: 'false',
 	cookie: {
-		maxAge: 10000
+		maxAge: null,
 	}
 }))
 app.use(passport.initialize())

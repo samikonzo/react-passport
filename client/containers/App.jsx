@@ -1,5 +1,5 @@
 import React from 'react'
-import { Link, Route, Switch } from 'react-router-dom'
+import { Link, Route, Switch, Redirect } from 'react-router-dom'
 import AppActions from '../flux/actions/AppActions.js'
 import AppStore from '../flux/stores/AppStore.js'
 import AuthStore from '../flux/stores/AuthStore.js'
@@ -14,7 +14,7 @@ import Home from '../components/Home.jsx'
 import PageLoading from '../components/PageLoading.jsx' //loading for authcheck
 import Loading from '../components/etc/Loading.jsx'
 import Menu from '../components/Menu.jsx'
-
+import Items from '../components/Items.jsx'
 
 /**
 *	Description
@@ -155,13 +155,17 @@ class App extends React.Component{
 		var AppBody
 		if(this.state.Auth_isLogged){
 			AppBody = (	
-				<div>
+				<div className='AppBody'>
 					<Menu />
 					{/*<LogoutBtn />*/}
 					
 					<Switch> 
 						<Route exact path='/' component={Home} />
 						<Route path='/contacts' component={Contacts} />
+						<Route path='/items' component={Items} />
+						<Redirect path='/register' to={{pathname: '/'}} />
+						<Route component={PageLoading}/>
+						{/*<Redirect to={{pathname: '/'}}/>*/}
 					</Switch>
 				</div>
 			)
@@ -189,7 +193,7 @@ class App extends React.Component{
 		if(this.state._historyObj == undefined){
 			GrabberLink = (<Link to='/' ref={elem => {this._historyObjGrabber(elem)}}/>)
 		} else {
-			GrabberLink = (<div></div>)
+			GrabberLink = (<div className="here_was_GrabberLink"></div>)
 		}
 
 

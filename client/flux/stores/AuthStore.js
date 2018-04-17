@@ -15,6 +15,7 @@ const initState = {
 	Auth_user 		: undefined,
 	Auth_userError 	: false,
 	Auth_userIsLoading : false,	
+	Auth_userAllItems: undefined
 }
 
 
@@ -162,16 +163,62 @@ Dispatcher.register( function(action){
 			l('USER_CHANGE_AVATAR')
 			break;
 		}
+
 		case Constants.USER_CHANGE_AVATAR_SUCCESS : {
 			state.Auth_user.avatar = action.src
 			AuthStore.emitChange('USER_CHANGE_AVATAR_SUCCESS ')
 			l('USER_CHANGE_AVATAR_SUCCESS')
 			break;
 		}
+
 		case Constants.USER_CHANGE_AVATAR_FAIL : {
 			l('USER_CHANGE_AVATAR_FAIL')
 			break;
 		}		
+
+
+		case Constants.USER_GET_ALL_ITEMS : {
+			state.Auth_isLoading = true
+			AuthStore.emitChange()
+			break;
+		}
+
+		case Constants.USER_GET_ALL_ITEMS_SUCCESS : {
+			state.Auth_isLoading = false
+			state.Auth_userAllItems = action.data
+
+			AuthStore.emitChange()
+			break;
+		}
+
+		case Constants.USER_GET_ALL_ITEMS_FAIL : {
+			state.Auth_isLoading = false
+
+			AuthStore.emitChange()
+			break;
+		}
+
+
+		case Constants.USER_SET_AVATAR : {
+			state.Auth_isLoading = true
+			AuthStore.emitChange()
+			break;
+		}
+
+		case Constants.USER_SET_AVATAR_SUCCESS : {
+			state.Auth_isLoading = false
+			if(state.Auth_user) state.Auth_user.avatar = action.data
+			//l('avatar seted')
+
+			AuthStore.emitChange()
+			break;
+		}
+
+		case Constants.USER_SET_AVATAR_FAIL	: {
+			state.Auth_isLoading = false
+			AuthStore.emitChange()
+			break;
+		}
 
 
 		default : {
@@ -194,6 +241,7 @@ const AuthStore = Object.assign({}, EventEmitter.prototype, {
 	},
 
 	emitChange(from){
+		//l(from)
 		this.emit(events.CHANGE_STATE)
 	},
 
@@ -210,7 +258,11 @@ const AuthStore = Object.assign({}, EventEmitter.prototype, {
 	getUserInfo(){
 		//l(state.Auth_user)
 		return state.Auth_user
-	}
+	},
+
+	getAllItems(){
+		return state.Auth_userAllItems
+	},
 
 })
 

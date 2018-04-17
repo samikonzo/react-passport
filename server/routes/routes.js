@@ -19,9 +19,10 @@ router.get('/authStatus', auth.authStatus)
 /**
 *	User
 */
-router.get('/user', data.isUserAuthed ,data.getUserInfo)
-router.post('/upload/user/avatar', data.isUserAuthed, data.userChangeAvatar)
-
+router.get('/user', data.isUserAuthed, data.getUserInfo)
+router.post('/user/setAvatar', data.isUserAuthed, data.userSetAvatar)
+router.post('/upload/user/avatar', data.isUserAuthed, data.userUploadAvatar)
+router.get('/upload/user/all', data.isUserAuthed, data.userGetAllItems)
 
 
 

@@ -123,7 +123,7 @@ const AppActions ={
 			result => {
 				var isAuthed = ( result.data != false )
 
-				if(isAuthed){
+				/*if(isAuthed){
 					var url = '/'
 					Dispatcher.dispatch({
 						type: Constants.PAGE_REDIRECT_TO,
@@ -131,7 +131,7 @@ const AppActions ={
 						url : url,
 						href : url,
 					})
-				}
+				}*/
 
 				
 				Dispatcher.dispatch({
@@ -189,13 +189,13 @@ const AppActions ={
 		api.login(formdata)
 			.then(
 				result => {
-					var url = '/'
+					/*var url = '/'
 					Dispatcher.dispatch({
 						type: Constants.PAGE_REDIRECT_TO,
 						data: url,
 						url : url,
 						href : url,
-					})
+					})*/
 
 					Dispatcher.dispatch({
 						type: Constants.AUTH_LOGIN_SUCCESS,
@@ -293,6 +293,50 @@ const AppActions ={
 					})
 				}
 			)
+	},
+
+	userGetAllItems(){
+		//l('userGetAllItems')
+
+		Dispatcher.dispatch({
+			type: Constants.USER_GET_ALL_ITEMS
+		})
+
+		api.userGetAllItems().then(
+			result => {
+				//l('result')
+				Dispatcher.dispatch({
+					type: Constants.USER_GET_ALL_ITEMS_SUCCESS,
+					data: result.data
+				})
+			},
+			error => {
+				//l('error')
+				Dispatcher.dispatch({
+					type: Constants.USER_GET_ALL_ITEMS_FAIL
+				})
+			}
+		)
+	},
+
+	userSetAvatar(imgSrc){
+		Dispatcher.dispatch({
+			type: Constants.USER_SET_AVATAR
+		})
+
+		api.userSetAvatar(imgSrc).then(
+			success => {
+				Dispatcher.dispatch({
+					type: Constants.USER_SET_AVATAR_SUCCESS,
+					data: success.data
+				})
+			},
+			error => {
+				Dispatcher.dispatch({
+					type: Constants.USER_SET_AVATAR_FAIL
+				})
+			}
+		)
 	},
 
 	/**

@@ -207,9 +207,6 @@ class App extends React.Component{
 	}
 }
 
-
-
-
 const Contacts = () => {
 	return(
 		<div>Contacts</div>
@@ -217,4 +214,7 @@ const Contacts = () => {
 }
 
 
+
 export default App
+
+

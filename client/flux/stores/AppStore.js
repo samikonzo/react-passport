@@ -25,7 +25,11 @@ Dispatcher.register( function(action){
 		}
 
 		case Constants.PAGE_REDIRECT_TO : {
-			//l(' REDIRECT_TO ')
+			//l(' REDIRECT_TO ', action.url)
+
+			// restrict change page to current
+			if(document.location.pathname == action.url) return
+
 			state.App_isLoading = true
 			AppStore.emitChange()
 

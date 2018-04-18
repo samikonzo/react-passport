@@ -71,6 +71,10 @@ export default {
 	},
 
 	userSetAvatar(imgSrc){
-		return axios.post('/user/setAvatar', {imgSrc: imgSrc})
+		return axios.post('/user/setAvatar', {imgSrc : imgSrc})
+	},
+
+	userRemoveItem(imgSrc){
+		return axios.post('/user/avatarDelete', {imgSrc : imgSrc})
 	}
 }

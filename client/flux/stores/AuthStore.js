@@ -221,6 +221,44 @@ Dispatcher.register( function(action){
 		}
 
 
+		case Constants.USER_REMOVE_ITEM : {
+			state.Auth_isLoading = true
+			AuthStore.emitChange()
+			break;
+		}
+
+		case Constants.USER_REMOVE_ITEM_SUCCESS : {
+			state.Auth_isLoading = false
+			var result = action.data
+			var item = action.item
+			l('remove result : ', result)	
+
+			if(result.status == 200){
+				/*state.Auth_userAllItems.splice(
+					state.Auth_userAllItems.indexOf(item), 1
+				)*/
+				var num = state.Auth_userAllItems.indexOf(item)
+				l('num : ', num)
+				state.Auth_userAllItems.forEach( (link, i) => {
+					l(i, link)
+				})
+				state.Auth_userAllItems.splice(num,1)
+			}
+
+			AuthStore.emitChange()
+			break;
+		}
+
+		case Constants.USER_REMOVE_ITEM_FAIL : {
+			state.Auth_isLoading = false
+			AuthStore.emitChange()
+			break;
+		}
+
+
+
+
+
 		default : {
 			//l(action)
 		}

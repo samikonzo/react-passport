@@ -339,6 +339,28 @@ const AppActions ={
 		)
 	},
 
+	userRemoveItem(imgSrc){
+		Dispatcher.dispatch({
+			type: Constants.USER_REMOVE_ITEM
+		})
+
+		api.userRemoveItem(imgSrc).then(
+			result => {
+				Dispatcher.dispatch({
+					type: Constants.USER_REMOVE_ITEM_SUCCESS,
+					data: result,
+					item: imgSrc,
+				})
+			},
+
+			error => {
+				Dispatcher.dispatch({
+					type: Constants.USER_REMOVE_ITEM_FAIL
+				})
+			}
+		)
+	},
+
 	/**
 	*	Page changing
 	*/	

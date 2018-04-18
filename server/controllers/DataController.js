@@ -98,10 +98,44 @@ DataController.userUploadAvatar = (req, res, next) => {
 DataController.userGetAllItems = (req, res, next) => {
 	//l(req.user)
 	var storagePath = './uploads/' + req.user.username
+
+	if(!fs.existsSync(storagePath)){
+		return res.status(204).send()
+	}
+
 	var files = fs.readdirSync(storagePath)
 
 	files = files.map(filename => `./${req.user.username}/${filename}`)
 	res.send(files)
+}
+
+
+
+DataController.userDeleteItem = (req, res, next) => {
+	var imgSrc = req.body.imgSrc
+	l(req.body)
+	l(imgSrc)
+
+	var filePath = path.join('./uploads/', imgSrc)
+	l(filePath)
+
+	if(!fs.existsSync(filePath)){
+		return res.status(204).send()
+	}
+
+	setTimeout(() => {
+		fs.unlinkSync(filePath)
+		
+		setTimeout(() => {
+			res.status(200).send()
+		}, 2000)
+		
+	}, 3000)
+
+	// is avatar
+	//l(req.user.avatar)
+
+
 }
 
 DataController._findFileInUploads = (filename) => {
@@ -149,7 +183,5 @@ DataController._findFileInUploads = (filename) => {
 		reject()
 	})
 }
-
-
 
 module.exports = DataController
